@@ -10,8 +10,15 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ResumePage from "./pages/ResumePage";
+import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
+import ResumeHistoryPage from "./pages/ResumeHistoryPage";
 import JobsPage from "./pages/JobsPage";
 import ProfilePage from "./pages/ProfilePage";
+import InterviewSetupPage from "./pages/InterviewSetupPage";
+import InterviewPage from "./pages/InterviewPage";
+import InterviewReportPage from "./pages/InterviewReportPage";
+import InterviewHistoryPage from "./pages/InterviewHistoryPage";
+import CareerPage from "./pages/CareerPage";
 
 function App() {
   return (
@@ -60,8 +67,15 @@ function App() {
           >
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/resume" element={<ResumePage />} />
+            <Route path="/resume/analysis/:id" element={<ResumeAnalysisPage />} />
+            <Route path="/resume/history" element={<ResumeHistoryPage />} />
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/interview" element={<InterviewSetupPage />} />
+            <Route path="/interview/session/:sessionId" element={<InterviewPage />} />
+            <Route path="/interview/report/:sessionId" element={<InterviewReportPage />} />
+            <Route path="/interview/history" element={<InterviewHistoryPage />} />
+            <Route path="/career" element={<CareerPage />} />
           </Route>
         </Routes>
       </AuthProvider>

@@ -1,18 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import GlassCard from "../components/GlassCard";
+import LoadingSpinner from "../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import {
   Upload,
   FileText,
   Trash2,
-  Download,
   CloudUpload,
-  CheckCircle2,
-  X,
   Loader2,
   File,
+  Sparkles,
+  History,
+  Search,
+  ArrowRight,
 } from "lucide-react";
 
 const fadeUp = {
@@ -28,15 +31,29 @@ export default function ResumePage() {
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [resumes, setResumes] = useState([
-    {
-      id: 1,
-      fileName: "Bipul_Resume_2026.pdf",
-      uploadedAt: "2026-05-28",
-      size: "245 KB",
-    },
-  ]);
+  const [resumes, setResumes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [analyzingId, setAnalyzingId] = useState(null);
+  const [jobRole, setJobRole] = useState("");
+  const [showJobRoleFor, setShowJobRoleFor] = useState(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Load user's resumes on mount
+  useEffect(() => {
+    fetchResumes();
+  }, []);
+
+  const fetchResumes = async () => {
+    try {
+      const res = await API.get("/resume/list");
+      setResumes(res.data.resumes || []);
+    } catch (err) {
+      toast.error("Failed to load resumes");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -58,7 +75,6 @@ export default function ResumePage() {
   };
 
   const handleUpload = async (file) => {
-    // Validate file type
     const allowedTypes = [
       "application/pdf",
       "application/msword",
@@ -81,7 +97,6 @@ export default function ResumePage() {
     formData.append("resume", file);
 
     try {
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev >= 90) {
@@ -99,18 +114,12 @@ export default function ResumePage() {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      const newResume = {
-        id: res.data.resume?._id || Date.now(),
-        fileName: file.name,
-        uploadedAt: new Date().toISOString().split("T")[0],
-        size: `${(file.size / 1024).toFixed(0)} KB`,
-      };
-      setResumes((prev) => [newResume, ...prev]);
       toast.success("Resume uploaded successfully!");
 
       setTimeout(() => {
         setUploading(false);
         setUploadProgress(0);
+        fetchResumes(); // Refresh list from server
       }, 500);
     } catch (err) {
       toast.error(err.response?.data?.message || "Upload failed");
@@ -119,10 +128,46 @@ export default function ResumePage() {
     }
   };
 
-  const handleDelete = (id) => {
-    setResumes((prev) => prev.filter((r) => r.id !== id));
+  const handleAnalyze = async (resumeId) => {
+    setAnalyzingId(resumeId);
+    try {
+      const res = await API.post("/resume/analyze", {
+        resumeId,
+        jobRole: jobRole || undefined,
+      });
+
+      toast.success("Resume analyzed! Redirecting...");
+      const analysisId = res.data.analysis._id;
+      navigate(`/resume/analysis/${analysisId}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Analysis failed");
+    } finally {
+      setAnalyzingId(null);
+      setShowJobRoleFor(null);
+      setJobRole("");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setResumes((prev) => prev.filter((r) => r._id !== id));
     toast.success("Resume removed");
   };
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="page-enter max-w-4xl mx-auto">
@@ -132,14 +177,23 @@ export default function ResumePage() {
         animate="visible"
         variants={fadeUp}
         custom={0}
-        className="mb-8"
+        className="mb-8 flex items-center justify-between flex-wrap gap-4"
       >
-        <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
-          <span className="gradient-text">Resume</span> Manager
-        </h1>
-        <p className="text-zinc-500">
-          Upload and manage your resumes. Supported formats: PDF, DOC, DOCX.
-        </p>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
+            <span className="gradient-text">Resume</span> Manager
+          </h1>
+          <p className="text-zinc-500">
+            Upload, manage, and analyze your resumes with AI.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/resume/history")}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-ghost text-sm text-zinc-300 hover:text-white"
+        >
+          <History size={16} />
+          Analysis History
+        </button>
       </motion.div>
 
       {/* Upload Zone */}
@@ -258,44 +312,83 @@ export default function ResumePage() {
             <AnimatePresence mode="popLayout">
               {resumes.map((resume, i) => (
                 <motion.div
-                  key={resume.id}
+                  key={resume._id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20, scale: 0.95 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <GlassCard className="flex items-center gap-4 py-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center flex-shrink-0">
-                      <File size={20} className="text-brand-400" />
-                    </div>
+                  <GlassCard className="py-4" hover={false}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center flex-shrink-0">
+                        <File size={20} className="text-brand-400" />
+                      </div>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {resume.fileName}
-                      </p>
-                      <p className="text-xs text-zinc-500 mt-0.5">
-                        {resume.size} • Uploaded {resume.uploadedAt}
-                      </p>
-                    </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">
+                          {resume.fileName}
+                        </p>
+                        <p className="text-xs text-zinc-500 mt-0.5">
+                          Uploaded {formatDate(resume.createdAt)}
+                        </p>
+                      </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-300 transition-colors"
-                        title="Download"
-                      >
-                        <Download size={16} />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(resume.id);
-                        }}
-                        className="p-2 rounded-lg hover:bg-rose-500/5 text-zinc-500 hover:text-rose-400 transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {/* Analyze Button */}
+                        {analyzingId === resume._id ? (
+                          <div className="flex items-center gap-2 px-3 py-2">
+                            <Loader2
+                              size={16}
+                              className="text-brand-400 animate-spin"
+                            />
+                            <span className="text-xs text-brand-400">
+                              Analyzing...
+                            </span>
+                          </div>
+                        ) : showJobRoleFor === resume._id ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={jobRole}
+                              onChange={(e) => setJobRole(e.target.value)}
+                              placeholder="Target role (optional)"
+                              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder:text-zinc-600 w-40 focus:outline-none input-glow"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  handleAnalyze(resume._id);
+                              }}
+                            />
+                            <button
+                              onClick={() => handleAnalyze(resume._id)}
+                              className="p-2 rounded-lg bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 transition-colors"
+                              title="Run Analysis"
+                            >
+                              <ArrowRight size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setShowJobRoleFor(resume._id)}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-brand-500/10 to-accent-500/10 text-brand-400 hover:from-brand-500/20 hover:to-accent-500/20 transition-all text-xs font-medium"
+                            title="Analyze with AI"
+                          >
+                            <Sparkles size={14} />
+                            Analyze
+                          </button>
+                        )}
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(resume._id);
+                          }}
+                          className="p-2 rounded-lg hover:bg-rose-500/5 text-zinc-500 hover:text-rose-400 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </GlassCard>
                 </motion.div>

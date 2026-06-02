@@ -8,6 +8,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  MessageSquare,
+  Compass,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -15,6 +17,8 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/resume", label: "Resume", icon: FileText },
   { path: "/jobs", label: "Jobs", icon: Briefcase },
+  { path: "/interview", label: "Interview", icon: MessageSquare },
+  { path: "/career", label: "Career Coach", icon: Compass },
   { path: "/profile", label: "Profile", icon: User },
 ];
 

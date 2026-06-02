@@ -27,17 +27,28 @@ const fadeUp = {
 };
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
   });
 
-  const handleSave = () => {
-    toast.success("Profile updated successfully!");
-    setEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateUser(formData);
+      toast.success("Profile updated successfully!");
+      setEditing(false);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update profile"
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleLogout = () => {
@@ -129,10 +140,11 @@ export default function ProfilePage() {
                     <div className="flex gap-2">
                       <button
                         onClick={handleSave}
-                        className="btn-primary px-4 py-2 rounded-xl text-xs font-medium text-white flex items-center gap-1.5"
+                        disabled={saving}
+                        className="btn-primary px-4 py-2 rounded-xl text-xs font-medium text-white flex items-center gap-1.5 disabled:opacity-50"
                       >
                         <Save size={14} />
-                        Save
+                        {saving ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={() => setEditing(false)}

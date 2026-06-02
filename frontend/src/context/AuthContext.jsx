@@ -67,8 +67,17 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = async (updates) => {
+    const res = await API.put("/auth/profile", updates);
+    const updatedUser = res.data.user;
+    setUser(updatedUser);
+    localStorage.setItem("cf_user", JSON.stringify(updatedUser));
+    return res.data;
+  };
+
   const value = {
     user,
+    setUser,
     token,
     loading,
     isAuthenticated: !!token,
@@ -76,6 +85,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     loadProfile,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -13,12 +13,16 @@ import {
   X,
   LogOut,
   Sparkles,
+  MessageSquare,
+  Compass,
 } from "lucide-react";
 
 const mobileNavItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/resume", label: "Resume", icon: FileText },
   { path: "/jobs", label: "Jobs", icon: Briefcase },
+  { path: "/interview", label: "Interview", icon: MessageSquare },
+  { path: "/career", label: "Career Coach", icon: Compass },
   { path: "/profile", label: "Profile", icon: User },
 ];
 
