@@ -49,11 +49,11 @@ function BarChart({ label, value, icon: Icon, color = "brand" }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-zinc-400 flex items-center gap-2">
+        <span className="text-sm text-[#4A4A4A] flex items-center gap-2">
           {Icon && <Icon size={14} />}
           {label}
         </span>
-        <span className="text-sm font-bold text-white">{value}%</span>
+        <span className="text-sm font-bold text-[#2D2D2D]">{value}%</span>
       </div>
       <div className="h-2 bg-white/5 rounded-full overflow-hidden">
         <motion.div
@@ -101,7 +101,7 @@ export default function InterviewReportPage() {
       <div className="page-enter max-w-4xl mx-auto">
         <GlassCard hover={false} className="text-center py-16">
           <AlertTriangle size={40} className="text-amber-400 mx-auto mb-4" />
-          <p className="text-zinc-300 mb-4">
+          <p className="text-[#4A4A4A] mb-4">
             Interview report not available yet.
           </p>
           <button
@@ -129,7 +129,7 @@ export default function InterviewReportPage() {
       >
         <button
           onClick={() => navigate("/interview/history")}
-          className="flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-4"
+          className="flex items-center gap-2 text-sm text-[#4A4A4A] hover:text-[#2D2D2D] transition-colors mb-4"
         >
           <ArrowLeft size={16} />
           Back to History
@@ -140,7 +140,7 @@ export default function InterviewReportPage() {
             <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
               <span className="gradient-text">Interview</span> Report
             </h1>
-            <p className="text-zinc-500 text-sm">
+            <p className="text-[#6B7280] text-sm">
               {session.interviewType} • {session.jobRole} •{" "}
               {session.experienceLevel} Level
             </p>
@@ -205,7 +205,7 @@ export default function InterviewReportPage() {
               <div className="p-2 rounded-lg bg-emerald-500/10">
                 <CheckCircle2 size={18} className="text-emerald-400" />
               </div>
-              <h3 className="text-base font-display font-semibold text-white">
+              <h3 className="text-base font-display font-semibold text-[#2D2D2D]">
                 Strengths
               </h3>
             </div>
@@ -222,7 +222,7 @@ export default function InterviewReportPage() {
                     size={14}
                     className="text-emerald-400 mt-0.5 flex-shrink-0"
                   />
-                  <p className="text-sm text-zinc-300 leading-relaxed">{s}</p>
+                  <p className="text-sm text-[#4A4A4A] leading-relaxed">{s}</p>
                 </motion.div>
               ))}
             </div>
@@ -240,7 +240,7 @@ export default function InterviewReportPage() {
               <div className="p-2 rounded-lg bg-amber-500/10">
                 <AlertTriangle size={18} className="text-amber-400" />
               </div>
-              <h3 className="text-base font-display font-semibold text-white">
+              <h3 className="text-base font-display font-semibold text-[#2D2D2D]">
                 Areas to Improve
               </h3>
             </div>
@@ -257,7 +257,7 @@ export default function InterviewReportPage() {
                     size={14}
                     className="text-amber-400 mt-0.5 flex-shrink-0"
                   />
-                  <p className="text-sm text-zinc-300 leading-relaxed">{a}</p>
+                  <p className="text-sm text-[#4A4A4A] leading-relaxed">{a}</p>
                 </motion.div>
               ))}
             </div>
@@ -274,7 +274,7 @@ export default function InterviewReportPage() {
         className="mb-8"
       >
         <GlassCard hover={false}>
-          <h3 className="text-base font-display font-semibold text-white mb-4">
+          <h3 className="text-base font-display font-semibold text-[#2D2D2D] mb-4">
             Question-by-Question Review
           </h3>
           <div className="space-y-3">
@@ -306,14 +306,14 @@ export default function InterviewReportPage() {
                       >
                         {q.score}/10
                       </span>
-                      <span className="text-sm text-zinc-300 truncate">
+                      <span className="text-sm text-[#4A4A4A] truncate">
                         Q{i + 1}: {q.question}
                       </span>
                     </div>
                     {isExpanded ? (
-                      <ChevronUp size={16} className="text-zinc-500 flex-shrink-0" />
+                      <ChevronUp size={16} className="text-[#6B7280] flex-shrink-0" />
                     ) : (
-                      <ChevronDown size={16} className="text-zinc-500 flex-shrink-0" />
+                      <ChevronDown size={16} className="text-[#6B7280] flex-shrink-0" />
                     )}
                   </button>
 
@@ -324,10 +324,10 @@ export default function InterviewReportPage() {
                       className="px-4 pb-4 space-y-3 border-t border-white/5 pt-3"
                     >
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1">
+                        <p className="text-xs text-[#6B7280] mb-1">
                           Your Answer:
                         </p>
-                        <p className="text-sm text-zinc-300 leading-relaxed bg-white/[0.02] rounded-lg p-3">
+                        <p className="text-sm text-[#1a1a1a] leading-relaxed bg-white/[0.02] rounded-lg p-3">
                           {q.userAnswer}
                         </p>
                       </div>
@@ -336,7 +336,7 @@ export default function InterviewReportPage() {
                           <p className="text-xs text-accent-400 mb-1">
                             Model Answer:
                           </p>
-                          <p className="text-sm text-zinc-300 leading-relaxed bg-accent-500/5 rounded-lg p-3 border border-accent-500/10">
+                          <p className="text-sm text-[#1a1a1a] leading-relaxed bg-accent-500/5 rounded-lg p-3 border border-accent-500/10">
                             {q.betterAnswer}
                           </p>
                         </div>
@@ -367,7 +367,7 @@ export default function InterviewReportPage() {
         </button>
         <button
           onClick={() => navigate("/career")}
-          className="px-6 py-4 rounded-2xl btn-ghost text-sm font-medium text-zinc-300 flex items-center gap-2"
+          className="px-6 py-4 rounded-2xl btn-ghost text-sm font-medium text-[#4A4A4A] flex items-center gap-2"
         >
           Career Coach
           <ArrowRight size={16} />

@@ -14,11 +14,12 @@ export default function GlassCard({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       onClick={onClick}
       className={`
-        rounded-2xl p-6
+        rounded-2xl p-6 bg-white
+        border border-slate-200/80
+        shadow-sm
         ${gradient ? "gradient-border" : ""}
-        glass
         transition-all duration-300
-        ${hover ? "hover:bg-white/[0.05] cursor-pointer" : ""}
+        ${hover ? "hover:shadow-md hover:border-slate-300/80 cursor-pointer" : ""}
         ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}

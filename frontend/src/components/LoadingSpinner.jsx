@@ -10,10 +10,10 @@ export default function LoadingSpinner({ size = "md", className = "" }) {
     <div className={`flex items-center justify-center ${className}`}>
       <div className={`${sizes[size]} relative`}>
         <div
-          className={`${sizes[size]} rounded-full border-2 border-transparent border-t-brand-400 border-r-accent-500 animate-spin`}
+          className={`${sizes[size]} rounded-full border-2 border-transparent border-t-indigo-500 border-r-purple-500 animate-spin`}
         />
         <div
-          className={`absolute inset-1 rounded-full border-2 border-transparent border-b-brand-300 animate-spin`}
+          className={`absolute inset-1 rounded-full border-2 border-transparent border-b-indigo-400 animate-spin`}
           style={{ animationDirection: "reverse", animationDuration: "0.6s" }}
         />
       </div>

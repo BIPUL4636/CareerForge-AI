@@ -20,10 +20,10 @@ export default function ScoreGauge({
 
   // Color based on score
   const getColor = (s) => {
-    if (s >= 80) return { stroke: "#34d399", text: "text-emerald-400", bg: "from-emerald-500/20" };
-    if (s >= 60) return { stroke: "#818cf8", text: "text-brand-400", bg: "from-brand-500/20" };
-    if (s >= 40) return { stroke: "#fbbf24", text: "text-amber-400", bg: "from-amber-500/20" };
-    return { stroke: "#fb7185", text: "text-rose-400", bg: "from-rose-500/20" };
+    if (s >= 80) return { stroke: "#10b981", text: "text-emerald-600", bg: "from-emerald-50" };
+    if (s >= 60) return { stroke: "#6366f1", text: "text-indigo-600", bg: "from-indigo-50" };
+    if (s >= 40) return { stroke: "#f59e0b", text: "text-amber-600", bg: "from-amber-50" };
+    return { stroke: "#ef4444", text: "text-rose-600", bg: "from-rose-50" };
   };
 
   const color = getColor(score);
@@ -55,7 +55,7 @@ export default function ScoreGauge({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="#e2e8f0"
           strokeWidth={strokeWidth}
         />
         {/* Score arc */}
@@ -72,7 +72,7 @@ export default function ScoreGauge({
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           style={{
-            filter: `drop-shadow(0 0 8px ${color.stroke}40)`,
+            filter: `drop-shadow(0 0 6px ${color.stroke}30)`,
           }}
         />
       </svg>
@@ -81,7 +81,7 @@ export default function ScoreGauge({
         <span className={`text-3xl font-display font-bold ${color.text}`}>
           {animatedScore}
         </span>
-        <span className="text-xs text-zinc-500 mt-0.5">{label}</span>
+        <span className="text-xs text-[#6B7280] mt-0.5">{label}</span>
       </div>
     </div>
   );

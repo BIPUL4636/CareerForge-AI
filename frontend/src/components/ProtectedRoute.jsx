@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-0">
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <LoadingSpinner size="lg" />
       </div>
     );

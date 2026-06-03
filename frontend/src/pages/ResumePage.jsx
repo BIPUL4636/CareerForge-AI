@@ -180,16 +180,16 @@ export default function ResumePage() {
         className="mb-8 flex items-center justify-between flex-wrap gap-4"
       >
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
+          <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1 text-[#2D2D2D]">
             <span className="gradient-text">Resume</span> Manager
           </h1>
-          <p className="text-zinc-500">
+          <p className="text-[#4A4A4A]">
             Upload, manage, and analyze your resumes with AI.
           </p>
         </div>
         <button
           onClick={() => navigate("/resume/history")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-ghost text-sm text-zinc-300 hover:text-white"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-ghost text-sm"
         >
           <History size={16} />
           Analysis History
@@ -212,11 +212,11 @@ export default function ResumePage() {
           className={`
             relative rounded-2xl border-2 border-dashed p-12
             flex flex-col items-center justify-center text-center
-            transition-all duration-300 cursor-pointer
+            transition-all duration-300 cursor-pointer bg-white
             ${
               dragOver
-                ? "border-brand-400 bg-brand-500/5"
-                : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+                ? "border-indigo-400 bg-indigo-50"
+                : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
             }
             ${uploading ? "pointer-events-none" : ""}
           `}
@@ -226,7 +226,7 @@ export default function ResumePage() {
             ref={fileInputRef}
             onChange={handleFileSelect}
             accept=".pdf,.doc,.docx"
-            className="hidden"
+            className="hidden text-gray-900 placeholder-gray-400"
             id="resume-upload-input"
           />
 
@@ -239,18 +239,18 @@ export default function ResumePage() {
               >
                 <Loader2
                   size={40}
-                  className="text-brand-400 animate-spin mb-4"
+                  className="text-indigo-500 animate-spin mb-4"
                 />
-                <p className="text-sm text-zinc-300 mb-3">Uploading...</p>
-                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <p className="text-sm text-[#4A4A4A] mb-3">Uploading...</p>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${uploadProgress}%` }}
-                    className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                     transition={{ duration: 0.3 }}
                   />
                 </div>
-                <p className="text-xs text-zinc-500 mt-2">
+                <p className="text-xs text-[#6B7280] mt-2">
                   {uploadProgress}% complete
                 </p>
               </motion.div>
@@ -263,25 +263,25 @@ export default function ResumePage() {
                 transition-all duration-300
                 ${
                   dragOver
-                    ? "bg-brand-500/20 scale-110"
-                    : "bg-white/5"
+                    ? "bg-indigo-100 scale-110"
+                    : "bg-slate-100"
                 }
               `}
               >
                 <CloudUpload
                   size={28}
                   className={`transition-colors ${
-                    dragOver ? "text-brand-400" : "text-zinc-500"
+                    dragOver ? "text-indigo-500" : "text-slate-400"
                   }`}
                 />
               </div>
-              <p className="text-sm text-zinc-300 mb-1">
-                <span className="text-brand-400 font-medium">
+              <p className="text-sm text-[#4A4A4A] mb-1">
+                <span className="text-[#185FA5] font-medium">
                   Click to upload
                 </span>{" "}
                 or drag and drop
               </p>
-              <p className="text-xs text-zinc-600">
+              <p className="text-xs text-[#6B7280]">
                 PDF, DOC, DOCX — Max 10MB
               </p>
             </>
@@ -296,14 +296,14 @@ export default function ResumePage() {
         variants={fadeUp}
         custom={2}
       >
-        <h2 className="text-lg font-display font-semibold text-white mb-4">
+        <h2 className="text-lg font-display font-semibold text-[#2D2D2D] mb-4">
           Your Resumes
         </h2>
 
         {resumes.length === 0 ? (
           <GlassCard hover={false} className="text-center py-12">
-            <FileText size={40} className="text-zinc-600 mx-auto mb-3" />
-            <p className="text-zinc-500 text-sm">
+            <FileText size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-[#4A4A4A] text-sm">
               No resumes uploaded yet. Upload your first resume above.
             </p>
           </GlassCard>
@@ -321,15 +321,15 @@ export default function ResumePage() {
                 >
                   <GlassCard className="py-4" hover={false}>
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center flex-shrink-0">
-                        <File size={20} className="text-brand-400" />
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                        <File size={20} className="text-indigo-600" />
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
+                        <p className="text-sm font-medium text-[#2D2D2D] truncate">
                           {resume.fileName}
                         </p>
-                        <p className="text-xs text-zinc-500 mt-0.5">
+                        <p className="text-xs text-[#6B7280] mt-0.5">
                           Uploaded {formatDate(resume.createdAt)}
                         </p>
                       </div>
@@ -340,9 +340,9 @@ export default function ResumePage() {
                           <div className="flex items-center gap-2 px-3 py-2">
                             <Loader2
                               size={16}
-                              className="text-brand-400 animate-spin"
+                              className="text-indigo-500 animate-spin"
                             />
-                            <span className="text-xs text-brand-400">
+                            <span className="text-xs text-[#185FA5]">
                               Analyzing...
                             </span>
                           </div>
@@ -353,7 +353,7 @@ export default function ResumePage() {
                               value={jobRole}
                               onChange={(e) => setJobRole(e.target.value)}
                               placeholder="Target role (optional)"
-                              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder:text-zinc-600 w-40 focus:outline-none input-glow"
+                              className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-gray-900 placeholder-gray-400 w-40 focus:outline-none input-glow"
                               onKeyDown={(e) => {
                                 if (e.key === "Enter")
                                   handleAnalyze(resume._id);
@@ -361,7 +361,7 @@ export default function ResumePage() {
                             />
                             <button
                               onClick={() => handleAnalyze(resume._id)}
-                              className="p-2 rounded-lg bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 transition-colors"
+                              className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
                               title="Run Analysis"
                             >
                               <ArrowRight size={14} />
@@ -370,7 +370,7 @@ export default function ResumePage() {
                         ) : (
                           <button
                             onClick={() => setShowJobRoleFor(resume._id)}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-brand-500/10 to-accent-500/10 text-brand-400 hover:from-brand-500/20 hover:to-accent-500/20 transition-all text-xs font-medium"
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 hover:from-indigo-100 hover:to-purple-100 transition-all text-xs font-medium border border-indigo-100"
                             title="Analyze with AI"
                           >
                             <Sparkles size={14} />
@@ -383,7 +383,7 @@ export default function ResumePage() {
                             e.stopPropagation();
                             handleDelete(resume._id);
                           }}
-                          className="p-2 rounded-lg hover:bg-rose-500/5 text-zinc-500 hover:text-rose-400 transition-colors"
+                          className="p-2 rounded-lg hover:bg-rose-50 text-[#6B7280] hover:text-rose-500 transition-colors"
                           title="Delete"
                         >
                           <Trash2 size={16} />

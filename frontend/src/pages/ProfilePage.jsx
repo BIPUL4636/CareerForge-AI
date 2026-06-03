@@ -76,7 +76,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
           Your <span className="gradient-text">Profile</span>
         </h1>
-        <p className="text-zinc-500">
+        <p className="text-[#4A4A4A]">
           Manage your account information and settings.
         </p>
       </motion.div>
@@ -110,7 +110,7 @@ export default function ProfilePage() {
                 {editing ? (
                   <div className="space-y-3 max-w-sm">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4A4A4A] mb-1">
                         Name
                       </label>
                       <input
@@ -119,12 +119,12 @@ export default function ProfilePage() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        className="w-full px-4 py-2 bg-surface-200 border border-white/5 rounded-xl text-white text-sm focus:outline-none input-glow"
+                        className="w-full px-4 py-2 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="profile-name"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4A4A4A] mb-1">
                         Email
                       </label>
                       <input
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        className="w-full px-4 py-2 bg-surface-200 border border-white/5 rounded-xl text-white text-sm focus:outline-none input-glow"
+                        className="w-full px-4 py-2 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="profile-email"
                       />
                     </div>
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                       </button>
                       <button
                         onClick={() => setEditing(false)}
-                        className="btn-ghost px-4 py-2 rounded-xl text-xs font-medium text-zinc-400"
+                        className="btn-ghost px-4 py-2 rounded-xl text-xs font-medium text-[#6B7280]"
                       >
                         <X size={14} />
                       </button>
@@ -157,21 +157,21 @@ export default function ProfilePage() {
                 ) : (
                   <>
                     <div className="flex items-center gap-3 justify-center sm:justify-start">
-                      <h2 className="text-xl font-display font-bold text-white">
+                      <h2 className="text-xl font-display font-bold text-[#2D2D2D]">
                         {user?.name || "User"}
                       </h2>
                       <button
                         onClick={() => setEditing(true)}
-                        className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-300 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-[#6B7280] hover:text-[#4A4A4A] transition-colors"
                       >
                         <Edit3 size={14} />
                       </button>
                     </div>
-                    <p className="text-sm text-zinc-400 mt-1">
+                    <p className="text-sm text-[#4A4A4A] mt-1">
                       {user?.email || "user@example.com"}
                     </p>
                     <div className="flex items-center gap-4 mt-3 justify-center sm:justify-start">
-                      <span className="flex items-center gap-1.5 text-xs text-zinc-500">
+                      <span className="flex items-center gap-1.5 text-xs text-[#6B7280]">
                         <Calendar size={12} />
                         Joined {joinDate}
                       </span>
@@ -196,7 +196,7 @@ export default function ProfilePage() {
         custom={2}
         className="mb-6"
       >
-        <h2 className="text-lg font-display font-semibold text-white mb-4">
+        <h2 className="text-lg font-display font-semibold text-[#2D2D2D] mb-4">
           Account Settings
         </h2>
 
@@ -206,10 +206,10 @@ export default function ProfilePage() {
               <User size={18} className="text-brand-400" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-[#2D2D2D]">
                 Personal Information
               </p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[#6B7280]">
                 Update your name and personal details
               </p>
             </div>
@@ -226,8 +226,8 @@ export default function ProfilePage() {
               <KeyRound size={18} className="text-amber-400" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">Change Password</p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm font-medium text-[#2D2D2D]">Change Password</p>
+              <p className="text-xs text-[#6B7280]">
                 Update your password for security
               </p>
             </div>
@@ -241,10 +241,10 @@ export default function ProfilePage() {
               <Mail size={18} className="text-accent-400" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-[#2D2D2D]">
                 Email Notifications
               </p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[#6B7280]">
                 Manage your email preferences
               </p>
             </div>
@@ -262,7 +262,7 @@ export default function ProfilePage() {
         variants={fadeUp}
         custom={3}
       >
-        <h2 className="text-lg font-display font-semibold text-white mb-4">
+        <h2 className="text-lg font-display font-semibold text-[#2D2D2D] mb-4">
           Session
         </h2>
 
@@ -273,8 +273,8 @@ export default function ProfilePage() {
                 <LogOut size={18} className="text-rose-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Sign Out</p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-sm font-medium text-[#2D2D2D]">Sign Out</p>
+                <p className="text-xs text-[#6B7280]">
                   Log out of your CareerForge account
                 </p>
               </div>

@@ -172,7 +172,7 @@ export default function InterviewPage() {
         className="flex items-center justify-between mb-4 flex-shrink-0"
       >
         <div>
-          <h1 className="text-lg font-display font-bold text-white">
+          <h1 className="text-lg font-display font-bold text-[#2D2D2D]">
             {session?.interviewType} Interview —{" "}
             <span className="gradient-text">{session?.jobRole}</span>
           </h1>
@@ -221,11 +221,11 @@ export default function InterviewPage() {
                     <Bot size={16} className="text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-zinc-500 mb-1">
+                    <p className="text-xs text-[#6B7280] mb-1">
                       Question {msg.num}
                     </p>
                     <div className="glass rounded-2xl rounded-tl-md p-4">
-                      <p className="text-sm text-zinc-200 leading-relaxed">
+                      <p className="text-sm text-[#1a1a1a] leading-relaxed">
                         {msg.text}
                       </p>
                     </div>
@@ -244,7 +244,7 @@ export default function InterviewPage() {
                 >
                   <div className="max-w-[80%]">
                     <div className="bg-brand-500/10 border border-brand-500/20 rounded-2xl rounded-tr-md p-4">
-                      <p className="text-sm text-zinc-200 leading-relaxed">
+                      <p className="text-sm text-[#1a1a1a] leading-relaxed">
                         {msg.text}
                       </p>
                     </div>
@@ -298,7 +298,7 @@ export default function InterviewPage() {
                             {msg.strengths.map((s, j) => (
                               <p
                                 key={j}
-                                className="text-xs text-zinc-400 leading-relaxed"
+                                className="text-xs text-[#4A4A4A] leading-relaxed"
                               >
                                 • {s}
                               </p>
@@ -316,7 +316,7 @@ export default function InterviewPage() {
                             {msg.weaknesses.map((w, j) => (
                               <p
                                 key={j}
-                                className="text-xs text-zinc-400 leading-relaxed"
+                                className="text-xs text-[#4A4A4A] leading-relaxed"
                               >
                                 • {w}
                               </p>
@@ -371,7 +371,7 @@ export default function InterviewPage() {
                               exit={{ opacity: 0, height: 0 }}
                               className="mt-2 p-3 rounded-lg bg-accent-500/5 border border-accent-500/10"
                             >
-                              <p className="text-xs text-zinc-300 leading-relaxed">
+                              <p className="text-xs text-[#1a1a1a] leading-relaxed">
                                 {msg.betterAnswer}
                               </p>
                             </motion.div>
@@ -429,7 +429,7 @@ export default function InterviewPage() {
             </button>
             <button
               onClick={() => navigate("/interview")}
-              className="px-6 py-4 rounded-2xl btn-ghost text-sm font-medium text-zinc-300"
+              className="px-6 py-4 rounded-2xl btn-ghost text-sm font-medium text-[#4A4A4A]"
             >
               New Interview
             </button>
@@ -449,7 +449,7 @@ export default function InterviewPage() {
               placeholder="Type your answer... (Shift+Enter for new line)"
               rows={3}
               disabled={submitting}
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none leading-relaxed"
+              className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none leading-relaxed"
             />
             <button
               onClick={handleSubmit}

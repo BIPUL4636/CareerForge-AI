@@ -192,7 +192,7 @@ export default function JobsPage() {
     setDiscoverLoading(true);
     setDiscoverSearched(true);
     try {
-      const params = { limit: 30 };
+      const params = { limit: 20 };
       if (discoverSearch) params.search = discoverSearch;
       if (discoverCategory !== "All") params.category = discoverCategory;
 
@@ -326,7 +326,7 @@ export default function JobsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by company or role..."
-                className="w-full pl-11 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow transition-all"
+                className="w-full pl-11 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow transition-all"
                 id="job-search"
               />
             </div>
@@ -402,7 +402,7 @@ export default function JobsPage() {
                                 className={`
                                   text-xs font-medium px-2.5 py-1 rounded-lg border cursor-pointer
                                   bg-transparent focus:outline-none appearance-none pr-6
-                                  ${config.bg} ${config.text} ${config.border}
+                                  ${config.bg} ${config.text} ${config.border} text-gray-900 placeholder-gray-400
                                 `}
                               >
                                 {statuses
@@ -521,8 +521,8 @@ export default function JobsPage() {
                 value={discoverSearch}
                 onChange={(e) => setDiscoverSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleDiscover()}
-                placeholder="Search jobs... e.g. React, Python, DevOps"
-                className="w-full pl-11 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow transition-all"
+                placeholder="Search jobs in India... e.g. React, Python, DevOps"
+                className="w-full pl-11 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow transition-all"
                 id="discover-search"
               />
             </div>
@@ -531,7 +531,7 @@ export default function JobsPage() {
               <select
                 value={discoverCategory}
                 onChange={(e) => setDiscoverCategory(e.target.value)}
-                className="px-4 py-2.5 pr-8 bg-surface-200 border border-white/5 rounded-xl text-white text-sm focus:outline-none input-glow appearance-none cursor-pointer"
+                className="px-4 py-2.5 pr-8 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow appearance-none cursor-pointer"
                 id="discover-category"
               >
                 {discoverCategories.map((cat) => (
@@ -576,8 +576,8 @@ export default function JobsPage() {
             <div className="flex items-center gap-2">
               <Globe size={14} className="text-accent-400 flex-shrink-0" />
               <p className="text-xs text-zinc-400">
-                Live remote job listings powered by{" "}
-                <span className="text-accent-300 font-medium">Remotive</span>.
+                Real job listings across India, powered by{" "}
+                <span className="text-accent-300 font-medium">Adzuna</span>.
                 Click <Bookmark size={10} className="inline text-brand-400" />{" "}
                 to save any job directly to your tracker.
               </p>
@@ -774,7 +774,7 @@ export default function JobsPage() {
                           setNewJob({ ...newJob, company: e.target.value })
                         }
                         placeholder="e.g. Google"
-                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow"
+                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="modal-company"
                       />
                     </div>
@@ -796,7 +796,7 @@ export default function JobsPage() {
                           setNewJob({ ...newJob, role: e.target.value })
                         }
                         placeholder="e.g. Software Engineer"
-                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow"
+                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="modal-role"
                       />
                     </div>
@@ -818,7 +818,7 @@ export default function JobsPage() {
                           setNewJob({ ...newJob, location: e.target.value })
                         }
                         placeholder="e.g. Bangalore, IN or Remote"
-                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow"
+                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="modal-location"
                       />
                     </div>
@@ -834,7 +834,7 @@ export default function JobsPage() {
                         onChange={(e) =>
                           setNewJob({ ...newJob, status: e.target.value })
                         }
-                        className="w-full px-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white text-sm focus:outline-none input-glow appearance-none cursor-pointer"
+                        className="w-full px-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow appearance-none cursor-pointer"
                         id="modal-status"
                       >
                         {statuses
@@ -868,7 +868,7 @@ export default function JobsPage() {
                           setNewJob({ ...newJob, link: e.target.value })
                         }
                         placeholder="https://..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow"
+                        className="w-full pl-10 pr-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow"
                         id="modal-link"
                       />
                     </div>
@@ -885,7 +885,7 @@ export default function JobsPage() {
                       }
                       placeholder="Any notes about this job..."
                       rows={2}
-                      className="w-full px-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-white placeholder:text-zinc-600 text-sm focus:outline-none input-glow resize-none"
+                      className="w-full px-4 py-2.5 bg-surface-200 border border-white/5 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow resize-none"
                       id="modal-notes"
                     />
                   </div>

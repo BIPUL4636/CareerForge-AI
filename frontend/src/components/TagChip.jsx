@@ -4,13 +4,13 @@
  */
 export default function TagChip({ label, variant = "neutral", className = "" }) {
   const variants = {
-    success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    error: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-    warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    brand: "bg-brand-500/10 text-brand-400 border-brand-500/20",
-    accent: "bg-accent-500/10 text-accent-400 border-accent-500/20",
-    neutral: "bg-white/5 text-zinc-300 border-white/10",
+    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    error: "bg-rose-50 text-rose-700 border-rose-200",
+    warning: "bg-amber-50 text-amber-700 border-amber-200",
+    info: "bg-blue-50 text-blue-700 border-blue-200",
+    brand: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    accent: "bg-purple-50 text-purple-700 border-purple-200",
+    neutral: "bg-slate-50 text-slate-600 border-slate-200",
   };
 
   return (

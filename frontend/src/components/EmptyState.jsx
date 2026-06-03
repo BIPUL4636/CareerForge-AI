@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import GlassCard from "./GlassCard";
 
 /**
  * Reusable empty state component.
@@ -20,17 +19,17 @@ export default function EmptyState({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <GlassCard hover={false} className={`text-center py-16 ${className}`}>
+      <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm text-center py-16 px-6 ${className}`}>
         {Icon && (
-          <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
-            <Icon size={28} className="text-zinc-600" />
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Icon size={28} className="text-[#6B7280]" />
           </div>
         )}
-        <h3 className="text-lg font-display font-semibold text-zinc-300 mb-2">
+        <h3 className="text-lg font-display font-semibold text-[#2D2D2D] mb-2">
           {title}
         </h3>
         {description && (
-          <p className="text-sm text-zinc-500 max-w-md mx-auto mb-6">
+          <p className="text-sm text-[#4A4A4A] max-w-md mx-auto mb-6">
             {description}
           </p>
         )}
@@ -42,7 +41,7 @@ export default function EmptyState({
             {actionLabel}
           </Link>
         )}
-      </GlassCard>
+      </div>
     </motion.div>
   );
 }

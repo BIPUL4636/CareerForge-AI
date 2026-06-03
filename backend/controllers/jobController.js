@@ -40,9 +40,7 @@ const createJob = async (req, res) => {
       req.body;
 
     if (!company || !role) {
-      return res
-        .status(400)
-        .json({ message: "Company and role are required" });
+      return res.status(400).json({ message: "Company and role are required" });
     }
 
     const job = await Job.create({
@@ -78,11 +76,10 @@ const updateJob = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    const updatedJob = await Job.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.status(200).json({ message: "Job updated", job: updatedJob });
   } catch (error) {
@@ -144,44 +141,44 @@ const getJobStats = async (req, res) => {
   }
 };
 
-// @desc    Discover live jobs from Remotive API
+// @desc    Discover live jobs from Adzuna India API
 // @route   GET /api/jobs/discover
 // @access  Private
 const discoverJobs = async (req, res) => {
   try {
     const { search, category, limit } = req.query;
 
-    const params = {};
-    if (search) params.search = search;
-    if (category) params.category = category;
-    if (limit) params.limit = parseInt(limit) || 20;
-    else params.limit = 20;
-
     const response = await axios.get(
-      "https://remotive.com/api/remote-jobs",
-      { params, timeout: 10000 }
+      `https://api.adzuna.com/v1/api/jobs/in/search/1`,
+      {
+        params: {
+          app_id: process.env.ADZUNA_APP_ID,
+          app_key: process.env.ADZUNA_APP_KEY,
+          results_per_page: limit || 20,
+          what: search || "",
+          "content-type": "application/json",
+        },
+        timeout: 10000,
+      },
     );
 
-    const jobs = response.data.jobs || [];
-
-    // Transform to a clean format
-    const formatted = jobs.slice(0, params.limit).map((job) => ({
+    const jobs = (response.data.results || []).map((job) => ({
       id: job.id,
-      company: job.company_name,
       role: job.title,
-      location: job.candidate_required_location || "Worldwide",
-      category: job.category,
-      jobType: job.job_type,
-      salary: job.salary || "Not disclosed",
-      link: job.url,
-      publishedDate: job.publication_date,
-      companyLogo: job.company_logo_url || null,
-      tags: job.tags || [],
+      company: job.company?.display_name || "Unknown",
+      location: job.location?.display_name || "India",
+      link: job.redirect_url,
+      jobType: job.contract_time || "Full-time",
+      salary: job.salary_min
+        ? `₹${Math.round(job.salary_min / 1000)}K - ₹${Math.round(job.salary_max / 1000)}K`
+        : "Not disclosed",
+      tags: job.category?.label ? [job.category.label] : [],
+      companyLogo: null,
     }));
 
-    res.status(200).json({ jobs: formatted, total: jobs.length });
+    res.status(200).json({ jobs });
   } catch (error) {
-    console.error("Remotive API error:", error.message);
+    console.error("Adzuna API error:", error.message);
     res.status(502).json({
       message: "Failed to fetch jobs from external API",
       error: error.message,

@@ -38,7 +38,7 @@ const typeColors = {
 };
 
 const getScoreColor = (score) => {
-  if (!score && score !== 0) return "text-zinc-500 bg-white/5";
+  if (!score && score !== 0) return "text-[#6B7280] bg-white/5";
   if (score >= 80) return "text-emerald-400 bg-emerald-500/10";
   if (score >= 60) return "text-brand-400 bg-brand-500/10";
   if (score >= 40) return "text-amber-400 bg-amber-500/10";
@@ -84,7 +84,7 @@ export default function InterviewHistoryPage() {
       >
         <button
           onClick={() => navigate("/interview")}
-          className="flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-4"
+          className="flex items-center gap-2 text-sm text-[#4A4A4A] hover:text-[#2D2D2D] transition-colors mb-4"
         >
           <ArrowLeft size={16} />
           Back to Interview Setup
@@ -93,7 +93,7 @@ export default function InterviewHistoryPage() {
         <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
           <span className="gradient-text">Interview</span> History
         </h1>
-        <p className="text-zinc-500">
+        <p className="text-[#4A4A4A]">
           Review your past mock interviews and performance.
         </p>
       </motion.div>
@@ -140,14 +140,14 @@ export default function InterviewHistoryPage() {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
+                    <p className="text-sm font-medium text-[#2D2D2D] truncate">
                       {session.jobRole}
                     </p>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-[#6B7280]">
                         {session.interviewType} • {session.experienceLevel}
                       </span>
-                      <span className="text-xs text-zinc-600 flex items-center gap-1">
+                      <span className="text-xs text-[#6B7280] flex items-center gap-1">
                         <Calendar size={12} />
                         {new Date(session.createdAt).toLocaleDateString(
                           "en-US",
@@ -174,7 +174,7 @@ export default function InterviewHistoryPage() {
                         In Progress
                       </span>
                     )}
-                    <ArrowRight size={16} className="text-zinc-600" />
+                    <ArrowRight size={16} className="text-[#6B7280]" />
                   </div>
                 </GlassCard>
               </motion.div>

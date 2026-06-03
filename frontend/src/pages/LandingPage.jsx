@@ -1,7 +1,7 @@
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import Navbar from "../components/Navbar";
-import GlassCard from "../components/GlassCard";
 import {
   Sparkles,
   FileText,
@@ -15,8 +15,18 @@ import {
   CheckCircle2,
   Globe,
   Code2,
-  Link2,
+  Link as LinkIcon,
+  AtSign,
+  Users,
+  Award,
+  BarChart3,
+  Target,
+  Play,
 } from "lucide-react";
+
+/* ═══════════════════════════════════════════
+   Animation Variants
+   ═══════════════════════════════════════════ */
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -27,43 +37,83 @@ const fadeUp = {
   }),
 };
 
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.8, ease: "easeOut" } },
+};
+
+const slideInLeft = {
+  hidden: { opacity: 0, x: -40 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.12, duration: 0.6, ease: "easeOut" },
+  }),
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
+  }),
+};
+
+/* ═══════════════════════════════════════════
+   Data
+   ═══════════════════════════════════════════ */
+
 const features = [
   {
     icon: Brain,
     title: "AI-Powered Resume Builder",
     desc: "Craft compelling resumes with AI that understands your industry and highlights your strengths.",
-    color: "brand",
+    gradient: "from-blue-500 to-indigo-600",
+    glow: "rgba(59, 130, 246, 0.15)",
   },
   {
     icon: Briefcase,
     title: "Smart Job Tracker",
     desc: "Track every application, interview, and offer in one beautifully organized dashboard.",
-    color: "accent",
+    gradient: "from-indigo-500 to-purple-600",
+    glow: "rgba(99, 102, 241, 0.15)",
   },
   {
     icon: TrendingUp,
     title: "Career Analytics",
     desc: "Gain insights into your job search with real-time analytics and progress tracking.",
-    color: "success",
+    gradient: "from-purple-500 to-violet-600",
+    glow: "rgba(168, 85, 247, 0.15)",
   },
   {
     icon: Shield,
     title: "Secure & Private",
     desc: "Your career data is encrypted and never shared. Your privacy is our priority.",
-    color: "info",
+    gradient: "from-blue-600 to-indigo-700",
+    glow: "rgba(37, 99, 235, 0.15)",
   },
   {
     icon: Zap,
     title: "Lightning Fast",
     desc: "No lag, no waiting. Every interaction feels instant and delightful.",
-    color: "warning",
+    gradient: "from-indigo-600 to-purple-700",
+    glow: "rgba(79, 70, 229, 0.15)",
   },
   {
     icon: FileText,
     title: "Multiple Formats",
     desc: "Export your resume in PDF, DOCX, or share a live link — your choice.",
-    color: "brand",
+    gradient: "from-violet-500 to-purple-600",
+    glow: "rgba(139, 92, 246, 0.15)",
   },
+];
+
+const stats = [
+  { icon: Users, value: 10000, suffix: "+", label: "Active Users" },
+  { icon: Award, value: 95, suffix: "%", label: "Success Rate" },
+  { icon: BarChart3, value: 50000, suffix: "+", label: "Resumes Built" },
+  { icon: Star, value: 4.9, suffix: "★", label: "User Rating", isDecimal: true },
 ];
 
 const steps = [
@@ -71,16 +121,19 @@ const steps = [
     num: "01",
     title: "Create Your Profile",
     desc: "Sign up in seconds and tell us about your career goals.",
+    icon: Target,
   },
   {
     num: "02",
     title: "Upload Your Resume",
     desc: "Drop your existing resume and let AI enhance it instantly.",
+    icon: FileText,
   },
   {
     num: "03",
     title: "Track & Apply",
     desc: "Manage applications, track progress, and land your dream job.",
+    icon: Play,
   },
 ];
 
@@ -90,86 +143,288 @@ const testimonials = [
     role: "Software Engineer at Google",
     text: "CareerForge transformed my job search. The AI resume suggestions were spot-on, and the tracker kept me organized throughout.",
     stars: 5,
+    avatar: "PS",
   },
   {
     name: "Rahul Mehta",
     role: "Product Manager at Flipkart",
     text: "The cleanest career tool I've ever used. The dashboard gives me a bird's-eye view of my entire job search journey.",
     stars: 5,
+    avatar: "RM",
   },
   {
     name: "Ananya Patel",
     role: "UX Designer at Microsoft",
     text: "From resume building to interview tracking, CareerForge is a game-changer. Highly recommend to every job seeker!",
     stars: 5,
+    avatar: "AP",
+  },
+  {
+    name: "David Chen",
+    role: "Data Scientist at Amazon",
+    text: "The AI-powered insights helped me tailor my resume for each role. Landed 3 interviews in my first week!",
+    stars: 5,
+    avatar: "DC",
+  },
+  {
+    name: "Sarah Williams",
+    role: "Frontend Dev at Spotify",
+    text: "Beautiful interface, powerful features. CareerForge made my career transition seamless and stress-free.",
+    stars: 5,
+    avatar: "SW",
   },
 ];
 
-export default function LandingPage() {
+/* ═══════════════════════════════════════════
+   Floating Particles Component
+   ═══════════════════════════════════════════ */
+
+function FloatingParticles() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+    let particles = [];
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    const createParticles = () => {
+      particles = Array.from({ length: 30 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.4 + 0.1,
+      }));
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(99, 102, 241, ${p.opacity})`;
+        ctx.fill();
+      });
+      animId = requestAnimationFrame(draw);
+    };
+
+    resize();
+    createParticles();
+    draw();
+
+    window.addEventListener("resize", () => {
+      resize();
+      createParticles();
+    });
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="particle-canvas" />;
+}
+
+/* ═══════════════════════════════════════════
+   Animated Counter Hook
+   ═══════════════════════════════════════════ */
+
+function useAnimatedCounter(target, isDecimal = false, duration = 2000, shouldStart = false) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!shouldStart) return;
+
+    let startTime;
+    let animId;
+
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+
+      const current = isDecimal
+        ? parseFloat((target * easedProgress).toFixed(1))
+        : Math.floor(target * easedProgress);
+
+      setCount(current);
+
+      if (progress < 1) {
+        animId = requestAnimationFrame(animate);
+      }
+    };
+
+    animId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animId);
+  }, [target, isDecimal, duration, shouldStart]);
+
+  return count;
+}
+
+/* ═══════════════════════════════════════════
+   Stat Card Component
+   ═══════════════════════════════════════════ */
+
+function StatCard({ stat, index }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const count = useAnimatedCounter(stat.value, stat.isDecimal, 2000, isInView);
+
+  const displayValue = stat.isDecimal
+    ? count.toFixed(1)
+    : count.toLocaleString();
+
   return (
-    <div className="min-h-screen bg-surface-0 overflow-hidden">
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={scaleIn}
+      custom={index}
+      className="stat-card-light"
+    >
+      <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
+        <stat.icon size={22} className="text-indigo-600" />
+      </div>
+      <div className="text-3xl sm:text-4xl font-display font-bold text-[#2D2D2D] mb-1">
+        {displayValue}
+        <span className="gradient-text-light">{stat.suffix}</span>
+      </div>
+      <div className="text-sm text-[#4A4A4A] font-medium">{stat.label}</div>
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Ripple Button Component
+   ═══════════════════════════════════════════ */
+
+function RippleButton({ children, className = "", ...props }) {
+  const handleClick = useCallback((e) => {
+    const btn = e.currentTarget;
+    const circle = document.createElement("span");
+    const rect = btn.getBoundingClientRect();
+    circle.className = "ripple-circle";
+    circle.style.left = `${e.clientX - rect.left}px`;
+    circle.style.top = `${e.clientY - rect.top}px`;
+    btn.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+  }, []);
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.97 }}
+      className={`btn-ripple inline-flex ${className}`}
+      onClick={handleClick}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Main Landing Page
+   ═══════════════════════════════════════════ */
+
+export default function LandingPage() {
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  // Auto-slide testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white overflow-hidden">
       <Navbar />
 
       {/* ══════════ HERO ══════════ */}
-      <section className="relative min-h-screen flex items-center justify-center hero-gradient pt-16">
-        {/* Animated background orbs */}
+      <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        {/* Animated gradient blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/8 rounded-full blur-3xl animate-glow-pulse" />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-500/6 rounded-full blur-3xl animate-glow-pulse"
-            style={{ animationDelay: "1.5s" }}
-          />
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-600/4 rounded-full blur-3xl animate-glow-pulse"
-            style={{ animationDelay: "0.8s" }}
-          />
+          <div className="blob blob-1" style={{ top: "5%", left: "10%" }} />
+          <div className="blob blob-2" style={{ top: "60%", right: "5%" }} />
+          <div className="blob blob-3" style={{ bottom: "10%", left: "30%" }} />
         </div>
 
-        {/* Grid pattern overlay */}
+        {/* Floating particles */}
+        <FloatingParticles />
+
+        {/* Grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(99,102,241,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.15) 1px, transparent 1px)`,
             backgroundSize: "60px 60px",
           }}
         />
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+          {/* Badge */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeUp}
             custom={0}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8 text-sm text-zinc-300"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full glass-light mb-8 text-sm text-[#185FA5] font-medium"
           >
-            <Sparkles size={14} className="text-brand-400" />
+            <Sparkles size={14} className="text-indigo-500" />
             <span>AI-Powered Career Platform</span>
           </motion.div>
 
+          {/* Heading */}
           <motion.h1
             initial="hidden"
             animate="visible"
             variants={fadeUp}
             custom={1}
-            className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold leading-[1.1] tracking-tight mb-6"
+            className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold leading-[1.1] tracking-tight mb-6 text-[#2D2D2D]"
           >
             Your Career,{" "}
-            <span className="gradient-text">Supercharged</span>
+            <span className="gradient-text-light">Supercharged</span>
             <br />
-            <span className="text-zinc-300">with AI</span>
+            <span className="text-[#6B7280]">with AI</span>
           </motion.h1>
 
+          {/* Subtitle */}
           <motion.p
             initial="hidden"
             animate="visible"
             variants={fadeUp}
             custom={2}
-            className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-[#4A4A4A] max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             Build stunning resumes, track every application, and let AI guide
             you to your dream role — all in one premium platform.
           </motion.p>
 
+          {/* CTA Buttons */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -177,80 +432,88 @@ export default function LandingPage() {
             custom={3}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link
-              to="/register"
-              className="btn-primary px-8 py-3.5 rounded-2xl text-base font-semibold text-white flex items-center gap-2 group"
-            >
-              Start Building Free
-              <ArrowRight
-                size={18}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </Link>
-            <Link
-              to="/login"
-              className="btn-ghost px-8 py-3.5 rounded-2xl text-base font-medium text-zinc-300"
-            >
-              Sign In
-            </Link>
+            <RippleButton>
+              <Link
+                to="/register"
+                className="btn-gradient-animated px-8 py-3.5 rounded-2xl text-base font-semibold text-white flex items-center gap-2 group"
+              >
+                Start Building Free
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </Link>
+            </RippleButton>
+            <RippleButton>
+              <Link
+                to="/login"
+                className="px-8 py-3.5 rounded-2xl text-base font-medium text-[#1a1a1a] bg-white border border-slate-200 hover:border-[#185FA5]/40 hover:bg-blue-50/50 transition-all duration-300"
+              >
+                Sign In
+              </Link>
+            </RippleButton>
           </motion.div>
 
-          {/* Floating cards mockup */}
+          {/* Floating Dashboard Preview */}
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
             className="mt-20 relative"
           >
-            <div className="glass-strong rounded-3xl p-1 shadow-2xl shadow-brand-500/5 max-w-4xl mx-auto">
-              <div className="rounded-2xl bg-surface-100 p-6 sm:p-8">
-                {/* Mock dashboard preview */}
+            <div className="glass-light-strong rounded-3xl p-1 shadow-2xl shadow-indigo-500/10 max-w-4xl mx-auto border border-slate-200/60">
+              <div className="rounded-2xl bg-white p-6 sm:p-8">
+                {/* Browser dots */}
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  <span className="ml-4 text-xs text-zinc-600">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-amber-400" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                  <span className="ml-4 text-xs text-[#6B7280]">
                     careerforge.ai/dashboard
                   </span>
                 </div>
+                {/* Stats row */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="glass rounded-xl p-4">
-                    <div className="text-2xl font-bold text-white mb-1">24</div>
-                    <div className="text-xs text-zinc-500">Applications</div>
+                  <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50">
+                    <div className="text-2xl font-bold text-indigo-700 mb-1">24</div>
+                    <div className="text-xs text-[#4A4A4A]">Applications</div>
                   </div>
-                  <div className="glass rounded-xl p-4">
-                    <div className="text-2xl font-bold gradient-text mb-1">
-                      8
-                    </div>
-                    <div className="text-xs text-zinc-500">Interviews</div>
+                  <div className="rounded-xl p-4 bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100/50">
+                    <div className="text-2xl font-bold gradient-text-light mb-1">8</div>
+                    <div className="text-xs text-[#4A4A4A]">Interviews</div>
                   </div>
-                  <div className="glass rounded-xl p-4">
-                    <div className="text-2xl font-bold text-emerald-400 mb-1">
-                      3
-                    </div>
-                    <div className="text-xs text-zinc-500">Offers</div>
+                  <div className="rounded-xl p-4 bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100/50">
+                    <div className="text-2xl font-bold text-emerald-600 mb-1">3</div>
+                    <div className="text-xs text-[#4A4A4A]">Offers</div>
                   </div>
                 </div>
+                {/* List items */}
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 glass rounded-xl p-3"
+                      className="flex items-center gap-3 rounded-xl p-3 bg-slate-50/80 border border-slate-100"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500/20 to-accent-500/20 flex items-center justify-center">
-                        <Briefcase size={14} className="text-brand-400" />
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                        <Briefcase size={14} className="text-indigo-600" />
                       </div>
                       <div className="flex-1">
                         <div
-                          className="h-3 bg-white/10 rounded-full"
+                          className="h-3 bg-slate-200 rounded-full"
                           style={{ width: `${70 - i * 10}%` }}
                         />
                         <div
-                          className="h-2 bg-white/5 rounded-full mt-1.5"
+                          className="h-2 bg-slate-100 rounded-full mt-1.5"
                           style={{ width: `${50 - i * 8}%` }}
                         />
                       </div>
-                      <div className="px-2 py-1 rounded-full text-[10px] bg-brand-500/10 text-brand-400">
+                      <div className={`px-2 py-1 rounded-full text-[10px] font-medium ${
+                        i === 1
+                          ? "bg-indigo-100 text-indigo-700"
+                          : i === 2
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-emerald-100 text-emerald-700"
+                      }`}>
                         {i === 1 ? "Interview" : i === 2 ? "Applied" : "Offer"}
                       </div>
                     </div>
@@ -263,10 +526,10 @@ export default function LandingPage() {
             <motion.div
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-6 -left-4 sm:left-8 glass-strong rounded-2xl px-4 py-3 shadow-xl hidden sm:flex items-center gap-2"
+              className="absolute -top-6 -left-4 sm:left-8 glass-light-strong rounded-2xl px-4 py-3 shadow-xl shadow-indigo-500/10 hidden sm:flex items-center gap-2"
             >
-              <CheckCircle2 size={16} className="text-emerald-400" />
-              <span className="text-sm text-zinc-300">Resume Score: 94%</span>
+              <CheckCircle2 size={16} className="text-emerald-500" />
+              <span className="text-sm text-[#1a1a1a] font-medium">Resume Score: 94%</span>
             </motion.div>
 
             <motion.div
@@ -277,18 +540,35 @@ export default function LandingPage() {
                 ease: "easeInOut",
                 delay: 1,
               }}
-              className="absolute -bottom-4 -right-4 sm:right-8 glass-strong rounded-2xl px-4 py-3 shadow-xl hidden sm:flex items-center gap-2"
+              className="absolute -bottom-4 -right-4 sm:right-8 glass-light-strong rounded-2xl px-4 py-3 shadow-xl shadow-purple-500/10 hidden sm:flex items-center gap-2"
             >
-              <TrendingUp size={16} className="text-brand-400" />
-              <span className="text-sm text-zinc-300">+42% this week</span>
+              <TrendingUp size={16} className="text-indigo-600" />
+              <span className="text-sm text-[#1a1a1a] font-medium">+42% this week</span>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
+      {/* ══════════ STATISTICS ══════════ */}
+      <section className="py-20 relative section-light-gradient">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            {stats.map((stat, i) => (
+              <StatCard key={stat.label} stat={stat} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══════════ FEATURES ══════════ */}
       <section id="features" className="py-24 lg:py-32 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Background blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="blob blob-2" style={{ top: "20%", right: "10%", opacity: 0.3 }} />
+          <div className="blob blob-3" style={{ bottom: "10%", left: "5%", opacity: 0.25 }} />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -296,62 +576,55 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-zinc-400 mb-4">
-              <Zap size={14} className="text-brand-400" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-light text-sm text-[#185FA5] font-medium mb-4">
+              <Zap size={14} className="text-indigo-500" />
               Features
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 text-[#2D2D2D]">
               Everything You Need to{" "}
-              <span className="gradient-text">Succeed</span>
+              <span className="gradient-text-light">Succeed</span>
             </h2>
-            <p className="text-zinc-400 max-w-xl mx-auto text-lg">
+            <p className="text-[#4A4A4A] max-w-xl mx-auto text-lg">
               Powerful tools designed to give you an unfair advantage in your job
               search.
             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((feat, i) => {
-              const colorMap = {
-                brand: "bg-brand-500/10 text-brand-400",
-                accent: "bg-accent-500/10 text-accent-400",
-                success: "bg-emerald-500/10 text-emerald-400",
-                info: "bg-blue-500/10 text-blue-400",
-                warning: "bg-amber-500/10 text-amber-400",
-              };
-
-              return (
-                <motion.div
-                  key={feat.title}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  variants={fadeUp}
-                  custom={i}
+            {features.map((feat, i) => (
+              <motion.div
+                key={feat.title}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={fadeUp}
+                custom={i}
+                whileHover={{ y: -8 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="feature-card-light"
+                style={{ "--glow-color": feat.glow }}
+              >
+                <div
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-4 shadow-lg`}
+                  style={{ boxShadow: `0 8px 24px -4px ${feat.glow}` }}
                 >
-                  <GlassCard className="h-full">
-                    <div
-                      className={`w-12 h-12 rounded-xl ${colorMap[feat.color]} flex items-center justify-center mb-4`}
-                    >
-                      <feat.icon size={22} />
-                    </div>
-                    <h3 className="text-lg font-display font-semibold text-white mb-2">
-                      {feat.title}
-                    </h3>
-                    <p className="text-sm text-zinc-400 leading-relaxed">
-                      {feat.desc}
-                    </p>
-                  </GlassCard>
-                </motion.div>
-              );
-            })}
+                  <feat.icon size={22} className="text-white" />
+                </div>
+                <h3 className="text-lg font-display font-semibold text-[#2D2D2D] mb-2">
+                  {feat.title}
+                </h3>
+                <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                  {feat.desc}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ══════════ HOW IT WORKS ══════════ */}
       <section id="how-it-works" className="py-24 lg:py-32 relative">
-        <div className="absolute inset-0 hero-gradient opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 section-light-gradient pointer-events-none" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
@@ -360,16 +633,19 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-zinc-400 mb-4">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-light text-sm text-[#185FA5] font-medium mb-4">
               How It Works
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 text-[#2D2D2D]">
               Three Steps to Your{" "}
-              <span className="gradient-text">Dream Job</span>
+              <span className="gradient-text-light">Dream Job</span>
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-blue-200 via-indigo-300 to-purple-200 rounded-full" />
+
             {steps.map((step, i) => (
               <motion.div
                 key={step.num}
@@ -378,15 +654,18 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 variants={fadeUp}
                 custom={i}
-                className="text-center"
+                className="text-center relative"
               >
-                <div className="text-5xl font-display font-black gradient-text mb-4 opacity-40">
-                  {step.num}
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 relative z-10">
+                  <step.icon size={24} className="text-white" />
                 </div>
-                <h3 className="text-xl font-display font-semibold text-white mb-3">
+                <div className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">
+                  Step {step.num}
+                </div>
+                <h3 className="text-xl font-display font-semibold text-[#2D2D2D] mb-3">
                   {step.title}
                 </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
+                <p className="text-[#4A4A4A] text-sm leading-relaxed">
                   {step.desc}
                 </p>
               </motion.div>
@@ -396,8 +675,13 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════ TESTIMONIALS ══════════ */}
-      <section id="testimonials" className="py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section id="testimonials" className="py-24 lg:py-32 relative overflow-hidden">
+        {/* Background blob */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="blob blob-1" style={{ top: "20%", left: "50%", opacity: 0.2 }} />
+        </div>
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -405,129 +689,208 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-zinc-400 mb-4">
-              <Star size={14} className="text-amber-400" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-light text-sm text-amber-600 font-medium mb-4">
+              <Star size={14} className="text-amber-500 fill-amber-500" />
               Testimonials
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 text-[#2D2D2D]">
               Loved by{" "}
-              <span className="gradient-text">Thousands</span>
+              <span className="gradient-text-light">Thousands</span>
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                custom={i}
-              >
-                <GlassCard className="h-full flex flex-col">
+          {/* Carousel */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-2xl">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTestimonial}
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -60 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="testimonial-card-light"
+                >
                   <div className="flex gap-1 mb-4">
-                    {Array.from({ length: t.stars }).map((_, j) => (
-                      <Star
-                        key={j}
-                        size={14}
-                        className="text-amber-400 fill-amber-400"
-                      />
-                    ))}
+                    {Array.from({ length: testimonials[currentTestimonial].stars }).map(
+                      (_, j) => (
+                        <Star
+                          key={j}
+                          size={16}
+                          className="text-amber-400 fill-amber-400"
+                        />
+                      )
+                    )}
                   </div>
-                  <p className="text-sm text-zinc-300 leading-relaxed flex-1 mb-6">
-                    "{t.text}"
+                  <p className="text-lg text-[#1a1a1a] leading-relaxed mb-8 italic">
+                    "{testimonials[currentTestimonial].text}"
                   </p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-sm font-bold">
-                      {t.name.charAt(0)}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow-md">
+                      {testimonials[currentTestimonial].avatar}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white">
-                        {t.name}
+                      <p className="text-base font-semibold text-[#2D2D2D]">
+                        {testimonials[currentTestimonial].name}
                       </p>
-                      <p className="text-xs text-zinc-500">{t.role}</p>
+                      <p className="text-sm text-[#4A4A4A]">
+                        {testimonials[currentTestimonial].role}
+                      </p>
                     </div>
                   </div>
-                </GlassCard>
-              </motion.div>
-            ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Dot Indicators */}
+            <div className="flex items-center justify-center gap-2 mt-8">
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentTestimonial(i)}
+                  className={`carousel-dot ${i === currentTestimonial ? "active" : ""}`}
+                  aria-label={`Go to testimonial ${i + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ══════════ CTA ══════════ */}
       <section className="py-24 lg:py-32 relative">
-        <div className="absolute inset-0 hero-gradient pointer-events-none" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            variants={fadeUp}
+            variants={fadeIn}
+            className="cta-gradient rounded-3xl p-12 sm:p-16 text-center relative overflow-hidden"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-6">
-              Ready to{" "}
-              <span className="gradient-text">Forge Your Future?</span>
-            </h2>
-            <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto">
-              Join thousands of professionals already using CareerForge AI to
-              accelerate their career growth.
-            </p>
-            <Link
-              to="/register"
-              className="btn-primary inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-lg font-semibold text-white group"
-            >
-              Get Started — It's Free
-              <ArrowRight
-                size={20}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </Link>
+            {/* Decorative blobs */}
+            <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+
+            <div className="relative z-10">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-6 text-white">
+                Ready to{" "}
+                <span className="text-indigo-200">Forge Your Future?</span>
+              </h2>
+              <p className="text-lg text-indigo-200/80 mb-10 max-w-xl mx-auto">
+                Join thousands of professionals already using CareerForge AI to
+                accelerate their career growth.
+              </p>
+              <RippleButton>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-lg font-semibold bg-white text-indigo-700 hover:bg-indigo-50 transition-colors group shadow-xl shadow-black/10"
+                >
+                  Get Started — It's Free
+                  <ArrowRight
+                    size={20}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+              </RippleButton>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* ══════════ FOOTER ══════════ */}
-      <footer className="border-t border-white/5 py-12">
+      <motion.footer
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+        className="footer-light py-16"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-                <Sparkles size={14} className="text-white" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+            {/* Brand */}
+            <div className="lg:col-span-1">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <Sparkles size={16} className="text-white" />
+                </div>
+                <span className="text-lg font-display font-bold text-[#2D2D2D]">
+                  Career<span className="gradient-text-light">Forge</span> AI
+                </span>
               </div>
-              <span className="text-sm font-display font-bold">
-                Career<span className="gradient-text">Forge</span> AI
-              </span>
+              <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                Your AI-powered career companion. Build resumes, track jobs, and land your dream role.
+              </p>
             </div>
 
-            <p className="text-xs text-zinc-600">
+            {/* Links columns */}
+            <div>
+              <h4 className="text-sm font-semibold text-[#2D2D2D] mb-4">Product</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#features" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Features</a></li>
+                <li><a href="#how-it-works" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">How It Works</a></li>
+                <li><a href="#testimonials" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Testimonials</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#2D2D2D] mb-4">Company</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">About</a></li>
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Careers</a></li>
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#2D2D2D] mb-4">Legal</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="text-sm text-[#4A4A4A] hover:text-[#185FA5] transition-colors">Cookie Policy</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="border-t border-slate-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-[#6B7280]">
               © {new Date().getFullYear()} CareerForge AI. All rights reserved.
             </p>
-
-            <div className="flex items-center gap-4">
-              <a
+            <div className="flex items-center gap-3">
+              <motion.a
                 href="#"
-                className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="social-icon-light"
               >
                 <Globe size={18} />
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="#"
-                className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="social-icon-light"
+              >
+                <AtSign size={18} />
+              </motion.a>
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="social-icon-light"
+              >
+                <LinkIcon size={18} />
+              </motion.a>
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="social-icon-light"
               >
                 <Code2 size={18} />
-              </a>
-              <a
-                href="#"
-                className="text-zinc-600 hover:text-zinc-300 transition-colors"
-              >
-                <Link2 size={18} />
-              </a>
+              </motion.a>
             </div>
           </div>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }

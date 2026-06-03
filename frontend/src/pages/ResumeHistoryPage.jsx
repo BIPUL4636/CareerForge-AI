@@ -24,10 +24,10 @@ const fadeUp = {
 };
 
 const getScoreColor = (score) => {
-  if (score >= 80) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-  if (score >= 60) return "text-brand-400 bg-brand-500/10 border-brand-500/20";
-  if (score >= 40) return "text-amber-400 bg-amber-500/10 border-amber-500/20";
-  return "text-rose-400 bg-rose-500/10 border-rose-500/20";
+  if (score >= 80) return "text-emerald-600 bg-emerald-50 border-emerald-200";
+  if (score >= 60) return "text-indigo-600 bg-indigo-50 border-indigo-200";
+  if (score >= 40) return "text-amber-600 bg-amber-50 border-amber-200";
+  return "text-rose-600 bg-rose-50 border-rose-200";
 };
 
 export default function ResumeHistoryPage() {
@@ -69,16 +69,16 @@ export default function ResumeHistoryPage() {
       >
         <button
           onClick={() => navigate("/resume")}
-          className="flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-4"
+          className="flex items-center gap-2 text-sm text-[#4A4A4A] hover:text-[#2D2D2D] transition-colors mb-4"
         >
           <ArrowLeft size={16} />
           Back to Resumes
         </button>
 
-        <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
+        <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1 text-[#2D2D2D]">
           <span className="gradient-text">Analysis</span> History
         </h1>
-        <p className="text-zinc-500">
+        <p className="text-[#4A4A4A]">
           All your past resume ATS analyses in one place.
         </p>
       </motion.div>
@@ -118,12 +118,12 @@ export default function ResumeHistoryPage() {
 
                 {/* Details */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate flex items-center gap-2">
-                    <FileText size={14} className="text-zinc-500 flex-shrink-0" />
+                  <p className="text-sm font-medium text-[#2D2D2D] truncate flex items-center gap-2">
+                    <FileText size={14} className="text-[#6B7280] flex-shrink-0" />
                     {analysis.resume?.fileName || "Resume"}
                   </p>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-zinc-500 flex items-center gap-1">
+                    <span className="text-xs text-[#6B7280] flex items-center gap-1">
                       <Calendar size={12} />
                       {new Date(analysis.createdAt).toLocaleDateString(
                         "en-US",
@@ -135,7 +135,7 @@ export default function ResumeHistoryPage() {
                       )}
                     </span>
                     {analysis.jobRole && (
-                      <span className="text-xs text-brand-400 flex items-center gap-1">
+                      <span className="text-xs text-[#185FA5] flex items-center gap-1">
                         <Target size={12} />
                         {analysis.jobRole}
                       </span>
@@ -146,7 +146,7 @@ export default function ResumeHistoryPage() {
                 {/* Arrow */}
                 <ArrowRight
                   size={16}
-                  className="text-zinc-600 group-hover:text-zinc-400 flex-shrink-0"
+                  className="text-[#6B7280] group-hover:text-[#4A4A4A] flex-shrink-0"
                 />
               </GlassCard>
             </motion.div>

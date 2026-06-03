@@ -99,13 +99,13 @@ export default function InterviewSetupPage() {
           <h1 className="text-2xl sm:text-3xl font-display font-bold mb-1">
             <span className="gradient-text">Mock</span> Interview
           </h1>
-          <p className="text-zinc-500">
+          <p className="text-[#4A4A4A]">
             Practice with AI-powered interviews tailored to your role.
           </p>
         </div>
         <button
           onClick={() => navigate("/interview/history")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-ghost text-sm text-zinc-300 hover:text-white"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-ghost text-sm text-[#4A4A4A] hover:text-[#2D2D2D]"
         >
           <History size={16} />
           History
@@ -121,7 +121,7 @@ export default function InterviewSetupPage() {
         className="mb-6"
       >
         <GlassCard hover={false}>
-          <label className="block text-sm font-medium text-zinc-300 mb-3">
+          <label className="block text-sm font-medium text-[#1a1a1a] mb-3">
             What role are you interviewing for?
           </label>
           <input
@@ -129,7 +129,7 @@ export default function InterviewSetupPage() {
             value={jobRole}
             onChange={(e) => setJobRole(e.target.value)}
             placeholder="e.g. Frontend Developer, Data Scientist, Product Manager..."
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-zinc-600 focus:outline-none input-glow transition-all text-sm"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all text-sm"
           />
         </GlassCard>
       </motion.div>
@@ -143,7 +143,7 @@ export default function InterviewSetupPage() {
         className="mb-6"
       >
         <GlassCard hover={false}>
-          <label className="block text-sm font-medium text-zinc-300 mb-3">
+          <label className="block text-sm font-medium text-[#1a1a1a] mb-3">
             Your experience level
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -156,8 +156,8 @@ export default function InterviewSetupPage() {
                   border
                   ${
                     experienceLevel === level
-                      ? "bg-brand-500/15 border-brand-500/40 text-white shadow-lg shadow-brand-500/10"
-                      : "bg-white/[0.02] border-white/10 text-zinc-400 hover:text-white hover:border-white/20"
+                      ? "bg-brand-500/15 border-brand-500/40 text-brand-700 shadow-lg shadow-brand-500/10"
+                      : "bg-white/[0.02] border-gray-200 text-[#4A4A4A] hover:text-brand-600 hover:border-brand-300 hover:bg-brand-500/5"
                   }
                 `}
               >
@@ -177,7 +177,7 @@ export default function InterviewSetupPage() {
         className="mb-8"
       >
         <GlassCard hover={false}>
-          <label className="block text-sm font-medium text-zinc-300 mb-3">
+          <label className="block text-sm font-medium text-[#1a1a1a] mb-3">
             Interview type
           </label>
           <div className="grid sm:grid-cols-3 gap-3">
@@ -211,11 +211,11 @@ export default function InterviewSetupPage() {
                       <item.icon size={18} className="text-white" />
                     </div>
                     <p
-                      className={`text-sm font-medium mb-1 ${isSelected ? "text-white" : "text-zinc-300"}`}
+                      className={`text-sm font-medium mb-1 ${isSelected ? "text-[#2D2D2D]" : "text-[#4A4A4A]"}`}
                     >
                       {item.label}
                     </p>
-                    <p className="text-xs text-zinc-500">{item.description}</p>
+                    <p className="text-xs text-[#6B7280]">{item.description}</p>
                   </div>
                 </motion.button>
               );
