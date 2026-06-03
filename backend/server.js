@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -14,6 +16,12 @@ const { errorHandler } = require("./middleware/errorMiddleware");
 
 // dotenv.config();
 
+// Ensure uploads directory exists (absolute path)
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log(`📁 Created uploads directory: ${uploadDir}`);
+}
 
 connectDB();
 
@@ -22,8 +30,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve uploaded files
-app.use("/uploads", express.static("uploads"));
+// Serve uploaded files (absolute path)
+app.use("/uploads", express.static(uploadDir));
 
 // Routes
 app.use("/api/auth", authRoutes);

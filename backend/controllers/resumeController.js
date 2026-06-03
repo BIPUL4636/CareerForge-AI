@@ -5,19 +5,27 @@ const fs = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
 
+// Absolute path to the uploads directory (matches resumeRoutes.js)
+const uploadDir = path.join(__dirname, "..", "uploads");
+
 // @desc    Upload a resume
 // @route   POST /api/resume/upload
 // @access  Private
 const uploadResume = async (req, res) => {
   try {
-    console.log("req.file =", req.file);
-    console.log("req.body =", req.body);
+    console.log("[uploadResume] req.file =", req.file);
+    console.log("[uploadResume] req.body =", req.body);
 
     if (!req.file) {
       return res.status(400).json({
         message: "No file uploaded",
       });
     }
+
+    // Use req.file.path which Multer already set to the absolute path
+    const absolutePath = req.file.path;
+    console.log(`[uploadResume] File saved at: ${absolutePath}`);
+    console.log(`[uploadResume] File exists: ${fs.existsSync(absolutePath)}`);
 
     const resume = await Resume.create({
       user: req.user.id,
@@ -30,6 +38,7 @@ const uploadResume = async (req, res) => {
       resume,
     });
   } catch (error) {
+    console.error("[uploadResume] Error:", error.message);
     res.status(500).json({
       message: error.message,
     });
@@ -73,19 +82,31 @@ const analyzeResume = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    // Read the PDF file
-    const filePath = path.resolve(resume.filePath);
+    // Resolve the file path — handle both old relative paths and new absolute paths
+    let filePath = resume.filePath;
+    if (!path.isAbsolute(filePath)) {
+      // Legacy record stored a relative path like "uploads/123-file.pdf"
+      // Resolve it against the project root (one level above controllers/)
+      filePath = path.join(uploadDir, path.basename(filePath));
+    }
+    console.log(`[analyzeResume] Resolved file path: ${filePath}`);
 
     if (!fs.existsSync(filePath)) {
+      console.error(`[analyzeResume] File not found: ${filePath}`);
       return res
         .status(404)
         .json({ message: "Resume file not found on server" });
     }
 
-
-    const pdfBuffer = fs.readFileSync(filePath);
-    const pdfData = await pdfParse(pdfBuffer);
-    const resumeText = pdfData.text;
+    let resumeText;
+    try {
+      const pdfBuffer = fs.readFileSync(filePath);
+      const pdfData = await pdfParse(pdfBuffer);
+      resumeText = pdfData.text;
+    } catch (readErr) {
+      console.error("[analyzeResume] PDF read/parse error:", readErr.message);
+      return res.status(500).json({ message: "Failed to read the resume PDF" });
+    }
 
     console.log("Resume Text Length:", resumeText.length);
     console.log("Resume Preview:");
