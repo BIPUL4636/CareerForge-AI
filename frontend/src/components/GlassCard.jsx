@@ -14,7 +14,7 @@ export default function GlassCard({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       onClick={onClick}
       className={`
-        rounded-2xl p-6 bg-white
+        rounded-2xl p-4 sm:p-6 bg-white
         border border-slate-200/80
         shadow-sm
         ${gradient ? "gradient-border" : ""}

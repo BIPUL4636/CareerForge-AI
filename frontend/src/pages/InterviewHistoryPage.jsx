@@ -129,7 +129,7 @@ export default function InterviewHistoryPage() {
                         : `/interview/session/${session._id}`
                     )
                   }
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-3 sm:gap-4"
                 >
                   {/* Type Icon */}
                   <div

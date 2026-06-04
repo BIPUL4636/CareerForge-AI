@@ -128,7 +128,7 @@ export default function DashboardPage() {
         animate="visible"
         variants={fadeUp}
         custom={1}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-1 responsive-stats-grid lg:grid-cols-4 gap-3 sm:gap-4 mb-8"
       >
         <StatsCard
           icon={Briefcase}
@@ -156,7 +156,7 @@ export default function DashboardPage() {
         />
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Recent Activity */}
         <motion.div
           initial="hidden"

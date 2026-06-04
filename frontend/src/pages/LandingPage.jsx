@@ -307,7 +307,7 @@ function StatCard({ stat, index }) {
       <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
         <stat.icon size={22} className="text-indigo-600" />
       </div>
-      <div className="text-3xl sm:text-4xl font-display font-bold text-[#2D2D2D] mb-1">
+      <div className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#2D2D2D] mb-1">
         {displayValue}
         <span className="gradient-text-light">{stat.suffix}</span>
       </div>
@@ -404,7 +404,7 @@ export default function LandingPage() {
             animate="visible"
             variants={fadeUp}
             custom={1}
-            className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold leading-[1.1] tracking-tight mb-6 text-[#2D2D2D]"
+            className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-[1.1] tracking-tight mb-6 text-[#2D2D2D]"
           >
             Your Career,{" "}
             <span className="gradient-text-light">Supercharged</span>
@@ -473,17 +473,17 @@ export default function LandingPage() {
                   </span>
                 </div>
                 {/* Stats row */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50">
-                    <div className="text-2xl font-bold text-indigo-700 mb-1">24</div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                  <div className="rounded-xl p-3 sm:p-4 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50">
+                    <div className="text-xl sm:text-2xl font-bold text-indigo-700 mb-1">24</div>
                     <div className="text-xs text-[#4A4A4A]">Applications</div>
                   </div>
-                  <div className="rounded-xl p-4 bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100/50">
-                    <div className="text-2xl font-bold gradient-text-light mb-1">8</div>
+                  <div className="rounded-xl p-3 sm:p-4 bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100/50">
+                    <div className="text-xl sm:text-2xl font-bold gradient-text-light mb-1">8</div>
                     <div className="text-xs text-[#4A4A4A]">Interviews</div>
                   </div>
-                  <div className="rounded-xl p-4 bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100/50">
-                    <div className="text-2xl font-bold text-emerald-600 mb-1">3</div>
+                  <div className="rounded-xl p-3 sm:p-4 bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100/50 col-span-2 sm:col-span-1">
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-600 mb-1">3</div>
                     <div className="text-xs text-[#4A4A4A]">Offers</div>
                   </div>
                 </div>
@@ -765,14 +765,14 @@ export default function LandingPage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeIn}
-            className="cta-gradient rounded-3xl p-12 sm:p-16 text-center relative overflow-hidden"
+            className="cta-gradient rounded-3xl p-8 sm:p-12 lg:p-16 text-center relative overflow-hidden"
           >
             {/* Decorative blobs */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-6 text-white">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold mb-6 text-white">
                 Ready to{" "}
                 <span className="text-indigo-200">Forge Your Future?</span>
               </h2>

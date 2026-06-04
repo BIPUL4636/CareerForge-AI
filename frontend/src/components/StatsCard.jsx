@@ -27,7 +27,7 @@ export default function StatsCard({ icon: Icon, label, value, trend, color = "br
       whileHover={{ y: -3, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={`
-        bg-white rounded-2xl p-6 relative overflow-hidden
+        bg-white rounded-2xl p-4 sm:p-6 relative overflow-hidden
         border border-slate-200/80 shadow-sm
         hover:shadow-md transition-all duration-300
       `}
@@ -39,7 +39,7 @@ export default function StatsCard({ icon: Icon, label, value, trend, color = "br
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <div className={`p-3 rounded-xl ${iconBg[color]}`}>
+          <div className={`p-2 sm:p-3 rounded-xl ${iconBg[color]}`}>
             {Icon && <Icon size={22} />}
           </div>
           {trend && (
@@ -54,8 +54,8 @@ export default function StatsCard({ icon: Icon, label, value, trend, color = "br
           )}
         </div>
 
-        <p className="text-3xl font-bold font-display text-[#2D2D2D] mb-1">{value}</p>
-        <p className="text-sm text-[#4A4A4A]">{label}</p>
+        <p className="text-2xl sm:text-3xl font-bold font-display text-[#2D2D2D] mb-1">{value}</p>
+        <p className="text-xs sm:text-sm text-[#4A4A4A]">{label}</p>
       </div>
     </motion.div>
   );

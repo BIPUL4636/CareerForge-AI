@@ -162,7 +162,7 @@ export default function InterviewReportPage() {
         className="mb-6"
       >
         <GlassCard hover={false}>
-          <div className="flex flex-col md:flex-row items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-8">
             <ScoreGauge
               score={report.overallScore}
               size={180}
@@ -193,7 +193,7 @@ export default function InterviewReportPage() {
       </motion.div>
 
       {/* Strengths & Areas to Improve */}
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -356,7 +356,7 @@ export default function InterviewReportPage() {
         animate="visible"
         variants={fadeUp}
         custom={5}
-        className="flex gap-3"
+        className="flex flex-col sm:flex-row gap-3"
       >
         <button
           onClick={() => navigate("/interview")}

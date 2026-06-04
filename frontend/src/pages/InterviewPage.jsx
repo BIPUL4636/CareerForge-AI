@@ -163,16 +163,16 @@ export default function InterviewPage() {
   }
 
   return (
-    <div className="page-enter max-w-4xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
+    <div className="page-enter max-w-4xl mx-auto flex flex-col h-[calc(100vh-6rem)] sm:h-[calc(100vh-8rem)]">
       {/* Header Bar */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={fadeUp}
-        className="flex items-center justify-between mb-4 flex-shrink-0"
+        className="flex items-start sm:items-center justify-between mb-4 flex-shrink-0 flex-wrap gap-2"
       >
         <div>
-          <h1 className="text-lg font-display font-bold text-[#2D2D2D]">
+          <h1 className="text-base sm:text-lg font-display font-bold text-[#2D2D2D]">
             {session?.interviewType} Interview —{" "}
             <span className="gradient-text">{session?.jobRole}</span>
           </h1>
@@ -206,7 +206,7 @@ export default function InterviewPage() {
       </motion.div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-3 sm:space-y-4 mb-4 scrollbar-thin">
         <AnimatePresence mode="popLayout">
           {messages.map((msg, i) => {
             if (msg.type === "question") {
@@ -242,7 +242,7 @@ export default function InterviewPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex gap-3 justify-end"
                 >
-                  <div className="max-w-[80%]">
+                  <div className="max-w-[85%] sm:max-w-[80%]">
                     <div className="bg-brand-500/10 border border-brand-500/20 rounded-2xl rounded-tr-md p-4">
                       <p className="text-sm text-[#1a1a1a] leading-relaxed">
                         {msg.text}
@@ -271,7 +271,7 @@ export default function InterviewPage() {
                   key={`f-${i}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="ml-12"
+                  className="ml-0 sm:ml-12"
                 >
                   <div className="glass rounded-2xl p-4 border border-white/5">
                     {/* Score */}
@@ -287,7 +287,7 @@ export default function InterviewPage() {
                     </div>
 
                     {/* Strengths & Weaknesses */}
-                    <div className="grid sm:grid-cols-2 gap-3 mb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                       {msg.strengths?.length > 0 && (
                         <div>
                           <p className="text-xs text-emerald-400 mb-1.5 flex items-center gap-1">
@@ -418,7 +418,7 @@ export default function InterviewPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex gap-3"
+            className="flex flex-col sm:flex-row gap-3"
           >
             <button
               onClick={() => navigate(`/interview/report/${sessionId}`)}

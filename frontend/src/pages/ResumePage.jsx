@@ -210,7 +210,7 @@ export default function ResumePage() {
           onDrop={handleDrop}
           onClick={() => !uploading && fileInputRef.current?.click()}
           className={`
-            relative rounded-2xl border-2 border-dashed p-12
+            relative rounded-2xl border-2 border-dashed p-6 sm:p-12
             flex flex-col items-center justify-center text-center
             transition-all duration-300 cursor-pointer bg-white
             ${
@@ -320,7 +320,7 @@ export default function ResumePage() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <GlassCard className="py-4" hover={false}>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
                         <File size={20} className="text-indigo-600" />
                       </div>
@@ -334,7 +334,7 @@ export default function ResumePage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
                         {/* Analyze Button */}
                         {analyzingId === resume._id ? (
                           <div className="flex items-center gap-2 px-3 py-2">
@@ -353,7 +353,7 @@ export default function ResumePage() {
                               value={jobRole}
                               onChange={(e) => setJobRole(e.target.value)}
                               placeholder="Target role (optional)"
-                              className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-gray-900 placeholder-gray-400 w-40 focus:outline-none input-glow"
+                              className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-gray-900 placeholder-gray-400 w-28 sm:w-40 focus:outline-none input-glow"
                               onKeyDown={(e) => {
                                 if (e.key === "Enter")
                                   handleAnalyze(resume._id);

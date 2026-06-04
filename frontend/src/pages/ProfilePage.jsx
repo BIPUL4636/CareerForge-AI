@@ -94,7 +94,7 @@ export default function ProfilePage() {
           <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-accent-500/5 pointer-events-none" />
 
           <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Avatar */}
               <div className="relative">
                 <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-3xl font-display font-bold shadow-xl shadow-brand-500/15">
@@ -201,7 +201,7 @@ export default function ProfilePage() {
         </h2>
 
         <div className="space-y-3">
-          <GlassCard className="flex items-center gap-4 py-4">
+          <GlassCard className="flex items-center gap-3 sm:gap-4 py-4">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
               <User size={18} className="text-brand-400" />
             </div>
@@ -221,7 +221,7 @@ export default function ProfilePage() {
             </button>
           </GlassCard>
 
-          <GlassCard className="flex items-center gap-4 py-4">
+          <GlassCard className="flex items-center gap-3 sm:gap-4 py-4">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
               <KeyRound size={18} className="text-amber-400" />
             </div>
@@ -236,7 +236,7 @@ export default function ProfilePage() {
             </button>
           </GlassCard>
 
-          <GlassCard className="flex items-center gap-4 py-4">
+          <GlassCard className="flex items-center gap-3 sm:gap-4 py-4">
             <div className="w-10 h-10 rounded-xl bg-accent-500/10 flex items-center justify-center">
               <Mail size={18} className="text-accent-400" />
             </div>
@@ -267,7 +267,7 @@ export default function ProfilePage() {
         </h2>
 
         <GlassCard hover={false} className="border-rose-500/10">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
                 <LogOut size={18} className="text-rose-400" />

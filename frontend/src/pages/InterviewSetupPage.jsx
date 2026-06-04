@@ -146,7 +146,7 @@ export default function InterviewSetupPage() {
           <label className="block text-sm font-medium text-[#1a1a1a] mb-3">
             Your experience level
           </label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {experienceLevels.map((level) => (
               <button
                 key={level}

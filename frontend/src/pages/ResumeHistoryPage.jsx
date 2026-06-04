@@ -104,7 +104,7 @@ export default function ResumeHistoryPage() {
             >
               <GlassCard
                 onClick={() => navigate(`/resume/analysis/${analysis._id}`)}
-                className="flex items-center gap-4"
+                className="flex items-center gap-3 sm:gap-4"
               >
                 {/* Score Badge */}
                 <div

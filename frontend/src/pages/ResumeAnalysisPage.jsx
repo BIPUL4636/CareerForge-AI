@@ -126,7 +126,7 @@ export default function ResumeAnalysisPage() {
         custom={1}
         className="mb-8"
       >
-        <GlassCard hover={false} className="flex flex-col sm:flex-row items-center gap-8">
+        <GlassCard hover={false} className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
           <ScoreGauge
             score={analysis?.atsScore || 0}
             size={180}
@@ -153,7 +153,7 @@ export default function ResumeAnalysisPage() {
         </GlassCard>
       </motion.div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
         {/* Skills Found */}
         <motion.div
           initial="hidden"
@@ -162,14 +162,14 @@ export default function ResumeAnalysisPage() {
           custom={2}
         >
           <GlassCard hover={false} className="h-full">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
               <div className="p-2 rounded-lg bg-emerald-50">
                 <CheckCircle2 size={18} className="text-emerald-600" />
               </div>
               <h3 className="text-base font-display font-semibold text-[#2D2D2D]">
                 Skills Found
               </h3>
-              <span className="ml-auto text-xs text-[#6B7280]">
+              <span className="text-xs text-[#6B7280] sm:ml-auto">
                 {analysis?.skillsFound?.length || 0} skills
               </span>
             </div>
@@ -195,14 +195,14 @@ export default function ResumeAnalysisPage() {
           custom={3}
         >
           <GlassCard hover={false} className="h-full">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
               <div className="p-2 rounded-lg bg-rose-50">
                 <AlertTriangle size={18} className="text-rose-500" />
               </div>
               <h3 className="text-base font-display font-semibold text-[#2D2D2D]">
                 Missing Skills
               </h3>
-              <span className="ml-auto text-xs text-[#6B7280]">
+              <span className="text-xs text-[#6B7280] sm:ml-auto">
                 {analysis?.missingSkills?.length || 0} gaps
               </span>
             </div>
@@ -221,7 +221,7 @@ export default function ResumeAnalysisPage() {
         </motion.div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
         {/* Strengths */}
         <motion.div
           initial="hidden"
@@ -312,14 +312,14 @@ export default function ResumeAnalysisPage() {
         className="mb-6"
       >
         <GlassCard hover={false}>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             <div className="p-2 rounded-lg bg-purple-50">
               <Search size={18} className="text-purple-600" />
             </div>
             <h3 className="text-base font-display font-semibold text-slate-900">
               Recommended Keywords
             </h3>
-            <span className="ml-auto text-xs text-[#6B7280]">
+            <span className="text-xs text-[#6B7280] sm:ml-auto">
               Add these to boost your ATS score
             </span>
           </div>
@@ -360,7 +360,7 @@ export default function ResumeAnalysisPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 + i * 0.1 }}
-                className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100"
+                className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0">
                   <span className="text-xs font-bold text-[#185FA5]">

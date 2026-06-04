@@ -34,7 +34,7 @@ export default function Sidebar() {
       className={`
         hidden lg:flex flex-col h-screen sticky top-0
         bg-white border-r border-slate-200
-        transition-all duration-300 ease-in-out
+        transition-all duration-300 ease-in-out flex-shrink-0
         ${collapsed ? "w-20" : "w-64"}
       `}
     >
@@ -55,7 +55,7 @@ export default function Sidebar() {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-6 space-y-1">
+      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (

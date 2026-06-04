@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -32,6 +32,16 @@ const mobileNavItems = [
 export default function DashboardLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { user, logout } = useAuth();
+
+  // Lock body scroll when mobile nav is open
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.classList.add('nav-open');
+    } else {
+      document.body.classList.remove('nav-open');
+    }
+    return () => document.body.classList.remove('nav-open');
+  }, [mobileNavOpen]);
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -47,7 +57,7 @@ export default function DashboardLayout() {
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200">
           <div className="flex items-center justify-between h-16 px-4 lg:px-8">
@@ -91,7 +101,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-8">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
@@ -112,7 +122,7 @@ export default function DashboardLayout() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed top-0 left-0 bottom-0 z-50 w-72 bg-white border-r border-slate-200 p-6 lg:hidden shadow-xl"
+              className="fixed top-0 left-0 bottom-0 z-50 w-[min(18rem,85vw)] bg-white border-r border-slate-200 p-5 sm:p-6 lg:hidden shadow-xl"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2.5">

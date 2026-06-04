@@ -271,12 +271,12 @@ export default function JobsPage() {
         animate="visible"
         variants={fadeUp}
         custom={0.5}
-        className="flex gap-1 p-1 rounded-xl bg-surface-200 border border-white/5 w-fit mb-6"
+        className="flex gap-1 p-1 rounded-xl bg-surface-200 border border-white/5 w-full sm:w-fit mb-6"
       >
         <button
           onClick={() => setActiveTab("tracker")}
           className={`
-            flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300
+            flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial
             ${
               activeTab === "tracker"
                 ? "bg-brand-500/15 text-brand-300 shadow-lg shadow-brand-500/5"
@@ -291,7 +291,7 @@ export default function JobsPage() {
         <button
           onClick={() => setActiveTab("discover")}
           className={`
-            flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300
+            flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial
             ${
               activeTab === "discover"
                 ? "bg-accent-500/15 text-accent-300 shadow-lg shadow-accent-500/5"
@@ -331,13 +331,13 @@ export default function JobsPage() {
               />
             </div>
 
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-nowrap overflow-x-auto pb-1 -mb-1 scrollbar-thin">
               {statuses.map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
                   className={`
-                    px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-200
+                    px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0
                     ${
                       filterStatus === status
                         ? "bg-brand-500/15 text-brand-300 border border-brand-500/20"
@@ -377,7 +377,7 @@ export default function JobsPage() {
                 </p>
               </GlassCard>
             ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 <AnimatePresence mode="popLayout">
                   {jobs.map((job, i) => {
                     const config = statusConfig[job.status] || statusConfig.Applied;
@@ -428,7 +428,7 @@ export default function JobsPage() {
                                 e.stopPropagation();
                                 handleDeleteJob(job._id);
                               }}
-                              className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-all"
+                              className="p-1.5 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-all"
                             >
                               <X size={14} />
                             </button>
@@ -553,7 +553,7 @@ export default function JobsPage() {
             <button
               onClick={handleDiscover}
               disabled={discoverLoading}
-              className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2 self-start disabled:opacity-50"
+              className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 w-full sm:w-auto sm:self-start disabled:opacity-50"
               id="discover-btn"
             >
               {discoverLoading ? (
@@ -742,7 +742,7 @@ export default function JobsPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="glass-strong rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                className="glass-strong rounded-2xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between mb-6">

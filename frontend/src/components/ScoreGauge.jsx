@@ -47,8 +47,8 @@ export default function ScoreGauge({
   }, [score]);
 
   return (
-    <div className={`relative inline-flex items-center justify-center ${className}`}>
-      <svg width={size} height={size} className="-rotate-90">
+    <div className={`score-gauge-container relative inline-flex items-center justify-center ${className}`}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" style={{ maxWidth: '100%', height: 'auto' }}>
         {/* Background track */}
         <circle
           cx={size / 2}
@@ -78,7 +78,7 @@ export default function ScoreGauge({
       </svg>
       {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={`text-3xl font-display font-bold ${color.text}`}>
+        <span className={`text-2xl sm:text-3xl font-display font-bold ${color.text}`}>
           {animatedScore}
         </span>
         <span className="text-xs text-[#6B7280] mt-0.5">{label}</span>

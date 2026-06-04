@@ -272,7 +272,7 @@ export default function CareerPage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 + i * 0.08 }}
-                  className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02]"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 rounded-xl bg-white/[0.02]"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white mb-1">
@@ -369,7 +369,7 @@ export default function CareerPage() {
         </motion.div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
         {/* Recommended Projects */}
         {recommendations?.recommendedProjects?.length > 0 && (
           <motion.div
