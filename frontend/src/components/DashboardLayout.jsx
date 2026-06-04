@@ -52,12 +52,12 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
       {/* Desktop sidebar */}
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-y-auto">
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200">
           <div className="flex items-center justify-between h-16 px-4 lg:px-8">

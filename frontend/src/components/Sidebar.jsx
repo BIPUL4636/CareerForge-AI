@@ -32,7 +32,7 @@ export default function Sidebar() {
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       className={`
-        hidden lg:flex flex-col h-screen sticky top-0
+        hidden lg:flex flex-col h-full
         bg-white border-r border-slate-200
         transition-all duration-300 ease-in-out flex-shrink-0
         ${collapsed ? "w-20" : "w-64"}
