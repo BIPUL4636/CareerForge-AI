@@ -11,6 +11,7 @@ const {
   analyzeResume,
   getAnalysis,
   getAnalysisHistory,
+  deleteResume,
 } = require("../controllers/resumeController");
 
 // ---------- Absolute upload directory ----------
@@ -76,6 +77,9 @@ router.post(
 
 // Resume list
 router.get("/list", getUserResumes);
+
+// Delete resume
+router.delete("/:id", deleteResume);
 
 // ATS Analysis
 router.post("/analyze", analyzeResume);

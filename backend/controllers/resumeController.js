@@ -205,10 +205,55 @@ const getAnalysisHistory = async (req, res) => {
   }
 };
 
+// @desc    Delete a resume and its associated file + analyses
+// @route   DELETE /api/resume/:id
+// @access  Private
+const deleteResume = async (req, res) => {
+  try {
+    const resume = await Resume.findById(req.params.id);
+
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    // Verify ownership
+    if (resume.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    // 1. Delete the physical file from disk
+    let filePath = resume.filePath;
+    if (!path.isAbsolute(filePath)) {
+      filePath = path.join(uploadDir, path.basename(filePath));
+    }
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`[deleteResume] Deleted file: ${filePath}`);
+    } else {
+      console.warn(`[deleteResume] File not found (already deleted?): ${filePath}`);
+    }
+
+    // 2. Delete all associated ResumeAnalysis records
+    const deletedAnalyses = await ResumeAnalysis.deleteMany({ resume: resume._id });
+    console.log(`[deleteResume] Deleted ${deletedAnalyses.deletedCount} associated analyses`);
+
+    // 3. Delete the resume document from MongoDB
+    await Resume.findByIdAndDelete(req.params.id);
+    console.log(`[deleteResume] Deleted resume record: ${req.params.id}`);
+
+    res.status(200).json({ message: "Resume deleted permanently" });
+  } catch (error) {
+    console.error("[deleteResume] Error:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   uploadResume,
   getUserResumes,
   analyzeResume,
   getAnalysis,
   getAnalysisHistory,
+  deleteResume,
 };

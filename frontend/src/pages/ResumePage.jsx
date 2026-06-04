@@ -149,8 +149,18 @@ export default function ResumePage() {
   };
 
   const handleDelete = async (id) => {
+    // Optimistic UI update — remove immediately from the list
+    const previousResumes = [...resumes];
     setResumes((prev) => prev.filter((r) => r._id !== id));
-    toast.success("Resume removed");
+
+    try {
+      await API.delete(`/resume/${id}`);
+      toast.success("Resume deleted permanently");
+    } catch (err) {
+      // Rollback on failure
+      setResumes(previousResumes);
+      toast.error(err.response?.data?.message || "Failed to delete resume");
+    }
   };
 
   const formatDate = (dateStr) => {
