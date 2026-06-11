@@ -66,10 +66,9 @@ export default function Sidebar() {
                 flex items-center gap-3 px-3 py-2.5 rounded-xl
                 text-sm font-medium transition-all duration-200
                 group relative overflow-hidden
-                ${
-                  isActive
-                    ? "text-[#185FA5] bg-indigo-50"
-                    : "text-[#4A4A4A] hover:text-[#2D2D2D] hover:bg-slate-50"
+                ${isActive
+                  ? "text-[#185FA5] bg-indigo-50"
+                  : "text-[#4A4A4A] hover:text-[#2D2D2D] hover:bg-slate-50"
                 }
               `}
             >
@@ -82,11 +81,10 @@ export default function Sidebar() {
               )}
               <item.icon
                 size={20}
-                className={`flex-shrink-0 ${
-                  isActive
+                className={`flex-shrink-0 ${isActive
                     ? "text-[#185FA5]"
                     : "text-[#6B7280] group-hover:text-[#4A4A4A]"
-                }`}
+                  }`}
               />
               {!collapsed && <span>{item.label}</span>}
             </NavLink>

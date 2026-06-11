@@ -180,11 +180,10 @@ export default function RegisterPage() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          i <= strength.level
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= strength.level
                             ? strength.color
                             : "bg-[#E2E8F0]"
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -210,11 +209,10 @@ export default function RegisterPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full pl-11 pr-12 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow transition-all ${
-                    confirmPassword && confirmPassword !== password
+                  className={`w-full pl-11 pr-12 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none input-glow transition-all ${confirmPassword && confirmPassword !== password
                       ? "border-rose-300"
                       : "border-slate-200"
-                  }`}
+                    }`}
                   id="register-confirm-password"
                 />
                 {confirmPassword && confirmPassword === password && (

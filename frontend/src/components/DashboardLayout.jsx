@@ -152,10 +152,9 @@ export default function DashboardLayout() {
                       className={`
                         flex items-center gap-3 px-4 py-3 rounded-xl
                         text-sm font-medium transition-colors
-                        ${
-                          isActive
-                            ? "text-[#185FA5] bg-indigo-50"
-                            : "text-[#4A4A4A] hover:text-[#2D2D2D] hover:bg-slate-50"
+                        ${isActive
+                          ? "text-[#185FA5] bg-indigo-50"
+                          : "text-[#4A4A4A] hover:text-[#2D2D2D] hover:bg-slate-50"
                         }
                       `}
                     >

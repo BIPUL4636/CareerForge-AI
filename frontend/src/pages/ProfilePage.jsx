@@ -58,9 +58,9 @@ export default function ProfilePage() {
 
   const joinDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      })
+      month: "long",
+      year: "numeric",
+    })
     : "May 2026";
 
   return (

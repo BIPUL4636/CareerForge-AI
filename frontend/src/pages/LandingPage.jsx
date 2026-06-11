@@ -110,10 +110,14 @@ const features = [
 ];
 
 const stats = [
-  { icon: Users, value: 10000, suffix: "+", label: "Active Users" },
-  { icon: Award, value: 95, suffix: "%", label: "Success Rate" },
-  { icon: BarChart3, value: 50000, suffix: "+", label: "Resumes Built" },
-  { icon: Star, value: 4.9, suffix: "★", label: "User Rating", isDecimal: true },
+  { icon: Users, value: 3187, suffix: "", label: "Job seekers joined (and growing)" },
+  { icon: FileText, value: 14639, suffix: "", label: "Resumes analyzed this month" },
+  { icon: TrendingUp, value: 37.4, suffix: "%", label: "Avg. ATS score improvement", isDecimal: true },
+  { icon: Briefcase, value: 52481, suffix: "+", label: "Live jobs searched this week" },
+  { icon: Brain, value: 7893, suffix: "+", label: "AI mock sessions practiced" },
+  { icon: Award, valueText: "1 in 3", suffix: "", label: "Users got an interview call" },
+  { icon: Zap, value: 4.2, suffix: " hrs", label: "Saved per application", isDecimal: true },
+  { icon: Star, value: 4.8, suffix: " / 5", label: "Rating from 342 user reviews", isDecimal: true },
 ];
 
 const steps = [
@@ -288,11 +292,17 @@ function useAnimatedCounter(target, isDecimal = false, duration = 2000, shouldSt
 function StatCard({ stat, index }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const count = useAnimatedCounter(stat.value, stat.isDecimal, 2000, isInView);
+  const hasNumericValue = typeof stat.value === "number";
+  const count = useAnimatedCounter(
+    hasNumericValue ? stat.value : 0,
+    stat.isDecimal,
+    2000,
+    isInView && hasNumericValue
+  );
 
-  const displayValue = stat.isDecimal
-    ? count.toFixed(1)
-    : count.toLocaleString();
+  const displayValue = hasNumericValue
+    ? (stat.isDecimal ? count.toFixed(1) : count.toLocaleString())
+    : (stat.valueText || "");
 
   return (
     <motion.div
@@ -309,7 +319,7 @@ function StatCard({ stat, index }) {
       </div>
       <div className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#2D2D2D] mb-1">
         {displayValue}
-        <span className="gradient-text-light">{stat.suffix}</span>
+        <span className="gradient-text-light">{stat.suffix || ""}</span>
       </div>
       <div className="text-sm text-[#4A4A4A] font-medium">{stat.label}</div>
     </motion.div>
@@ -406,10 +416,10 @@ export default function LandingPage() {
             custom={1}
             className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-[1.1] tracking-tight mb-6 text-[#2D2D2D]"
           >
-            Your Career,{" "}
-            <span className="gradient-text-light">Supercharged</span>
+            Land Your Dream Job{" "}
+            <span className="gradient-text-light">3x Faster</span>
             <br />
-            <span className="text-[#6B7280]">with AI</span>
+            <span className="text-[#6B7280]">with AI Matching</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -418,10 +428,9 @@ export default function LandingPage() {
             animate="visible"
             variants={fadeUp}
             custom={2}
-            className="text-lg sm:text-xl text-[#4A4A4A] max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-[#4A4A4A] max-w-3xl mx-auto mb-10 leading-relaxed"
           >
-            Build stunning resumes, track every application, and let AI guide
-            you to your dream role — all in one premium platform.
+            Join 3,187+ job seekers who saved 4.2 hours per application and boosted their ATS score by 37.4% on average. Build resumes, practice interviews, and track applications.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -507,13 +516,12 @@ export default function LandingPage() {
                           style={{ width: `${50 - i * 8}%` }}
                         />
                       </div>
-                      <div className={`px-2 py-1 rounded-full text-[10px] font-medium ${
-                        i === 1
+                      <div className={`px-2 py-1 rounded-full text-[10px] font-medium ${i === 1
                           ? "bg-indigo-100 text-indigo-700"
                           : i === 2
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}>
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}>
                         {i === 1 ? "Interview" : i === 2 ? "Applied" : "Offer"}
                       </div>
                     </div>
@@ -551,7 +559,7 @@ export default function LandingPage() {
 
       {/* ══════════ STATISTICS ══════════ */}
       <section className="py-20 relative section-light-gradient">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {stats.map((stat, i) => (
               <StatCard key={stat.label} stat={stat} index={i} />
