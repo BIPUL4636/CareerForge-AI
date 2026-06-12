@@ -3,39 +3,37 @@ const groq = require("../config/groq");
 
 /**
  * CareerForge AI — Reusable Gemini Service Layer
- * Wraps @google/genai SDK with JSON response parsing and retry logic.
+ * Wraps @google/genai SDK with JSON response parsing, retry, and fallback.
  *
- * Fallback: When Gemini fails with 503 / high-demand / overload errors
- * after MAX_GEMINI_RETRIES attempts, automatically falls back to Groq
- * (llama-3.3-70b-versatile) so the user request still succeeds.
+ * ┌─────────────────────────────────────────────────────┐
+ * │  FLOW (same for generateJSON & generateText):       │
+ * │                                                     │
+ * │  1. Call Gemini (gemini-2.0-flash)                  │
+ * │     └─ Success → return response                    │
+ * │     └─ Failure → log error, wait 1 s, go to 2      │
+ * │                                                     │
+ * │  2. RETRY Gemini (one retry)                        │
+ * │     └─ Success → return response                    │
+ * │     └─ Failure → log error, go to 3                 │
+ * │                                                     │
+ * │  3. FALLBACK to Groq (llama-3.3-70b-versatile)      │
+ * │     └─ Success → return response                    │
+ * │     └─ Failure → throw structured error             │
+ * └─────────────────────────────────────────────────────┘
  */
 
-const MAX_RETRIES = 2;
-const MAX_GEMINI_RETRIES = 3; // retries specifically for 503 / overload before Groq fallback
+// ─── Constants ─────────────────────────────────────────────────────
+
+const GEMINI_MODEL = "gemini-2.0-flash";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
+const RETRY_DELAY_MS = 1000; // 1 second wait before the single retry
 
 // ─── Helpers ───────────────────────────────────────────────────────
 
 /**
- * Returns true when an error indicates Gemini is overloaded / unavailable.
- * Matches HTTP 503, "overloaded", "resource exhausted", and "high demand".
- */
-const isOverloadError = (error) => {
-  const msg = (error.message || "").toLowerCase();
-  const status = error.status || error.statusCode || error.code;
-  return (
-    status === 503 ||
-    msg.includes("503") ||
-    msg.includes("overloaded") ||
-    msg.includes("resource exhausted") ||
-    msg.includes("resource_exhausted") ||
-    msg.includes("high demand") ||
-    msg.includes("service unavailable")
-  );
-};
-
-/**
- * Call Groq (llama-3.3-70b-versatile) as a fallback provider.
- * Returns the raw text response from Groq.
+ * Call Groq as a fallback provider.
+ * Uses GROQ_API_KEY from .env (loaded in ../config/groq).
+ * @returns {string} Raw text response from Groq.
  */
 const callGroqFallback = async (systemPrompt, userPrompt) => {
   if (!groq) {
@@ -44,10 +42,10 @@ const callGroqFallback = async (systemPrompt, userPrompt) => {
     );
   }
 
-  console.log("🔄 [Groq] Sending fallback request (llama-3.3-70b-versatile)...");
+  console.log(`🔄 [Groq] Sending fallback request (${GROQ_MODEL})...`);
 
   const response = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: GROQ_MODEL,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -58,12 +56,12 @@ const callGroqFallback = async (systemPrompt, userPrompt) => {
   });
 
   const text = response.choices?.[0]?.message?.content || "";
-  console.log("📥 [Groq] Fallback response received");
+  console.log("✅ [Groq] Fallback response received");
   return text;
 };
 
 /**
- * Extract JSON from Gemini response text.
+ * Extract JSON from LLM response text.
  * Handles ```json fencing, plain JSON, and nested objects.
  */
 const extractJSON = (text) => {
@@ -79,174 +77,145 @@ const extractJSON = (text) => {
     return JSON.parse(jsonMatch[0]);
   }
 
-  throw new Error("No valid JSON found in Gemini response");
+  throw new Error("No valid JSON found in response");
+};
+
+/**
+ * Raw Gemini API call (no retry/fallback — used internally).
+ * @returns {string} Raw text from Gemini.
+ */
+const callGemini = async (systemPrompt, userPrompt) => {
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: userPrompt }],
+      },
+    ],
+    config: {
+      systemInstruction: systemPrompt,
+      temperature: 0.7,
+      topP: 0.9,
+      maxOutputTokens: 4096,
+    },
+  });
+
+  const text = response.text || "";
+  if (!text.trim()) {
+    throw new Error("Empty response from Gemini");
+  }
+  return text;
 };
 
 // ─── Main API functions ────────────────────────────────────────────
 
 /**
- * Generate a structured JSON response from Gemini.
- * @param {string} systemPrompt - System instruction for Gemini
- * @param {string} userPrompt - User content to analyze
- * @param {number} retries - Current retry count (internal)
- * @returns {Promise<Object>} Parsed JSON response
+ * Generate a structured JSON response.
+ * Retry + Groq fallback flow (see diagram at top of file).
+ *
+ * @param {string} systemPrompt - System instruction
+ * @param {string} userPrompt   - User content to analyze
+ * @returns {Promise<Object>}    Parsed JSON response
  */
-const generateJSON = async (systemPrompt, userPrompt, retries = 0) => {
+const generateJSON = async (systemPrompt, userPrompt) => {
+  // ── Step 1: Try Gemini (first attempt) ──
   try {
-    console.log("📤 [Gemini] Sending generateJSON request...");
-
-    const response = await ai.models.generateContent({
-      // model: "gemini-2.5-flash",
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: userPrompt }],
-          
-        },
-      ],
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.7,
-        topP: 0.9,
-        maxOutputTokens: 4096,
-      },
-    });
-
-    console.log("📥 [Gemini] Response received from generateJSON");
-
-    const text = response.text || "";
-
-    if (!text.trim()) {
-      throw new Error("Empty response from Gemini");
-    }
-
+    console.log(`📤 [Gemini] Sending generateJSON request (${GEMINI_MODEL})...`);
+    const text = await callGemini(systemPrompt, userPrompt);
     const parsed = extractJSON(text);
-    console.log("✅ [Gemini] JSON parsed successfully");
+    console.log("✅ [Gemini] JSON parsed successfully — provider: Gemini");
     return parsed;
-  } catch (error) {
-    // ── 503 / overload → retry up to MAX_GEMINI_RETRIES then Groq fallback ──
-    if (isOverloadError(error)) {
-      if (retries < MAX_GEMINI_RETRIES) {
-        const delay = Math.min(1000 * 2 ** retries, 8000); // exponential back-off
-        console.log(
-          `⚠️ [Gemini] 503/overload detected, retrying in ${delay}ms (${retries + 1}/${MAX_GEMINI_RETRIES})...`
-        );
-        await new Promise((r) => setTimeout(r, delay));
-        return generateJSON(systemPrompt, userPrompt, retries + 1);
-      }
+  } catch (firstError) {
+    console.warn(
+      `⚠️ [Gemini] First attempt failed: ${firstError.message}`
+    );
+    console.log(`⏳ [Gemini] Retrying in ${RETRY_DELAY_MS}ms...`);
+  }
 
-      // All Gemini retries exhausted — fall back to Groq
-      console.warn(
-        `🚨 [Gemini] All ${MAX_GEMINI_RETRIES} retries exhausted. Switching to Groq fallback...`
-      );
-      try {
-        const groqText = await callGroqFallback(systemPrompt, userPrompt);
-        const parsed = extractJSON(groqText);
-        console.log("✅ [Groq] JSON parsed successfully (fallback)");
-        return parsed;
-      } catch (groqError) {
-        console.error("❌ [Groq] Fallback also failed:", groqError.message);
-        throw new Error(
-          `Gemini overloaded & Groq fallback failed: ${groqError.message}`
-        );
-      }
-    }
+  // ── Step 2: Retry Gemini once after 1 s delay ──
+  await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
 
-    // ── JSON parse failures → retry (original behaviour) ──
-    if (retries < MAX_RETRIES && error.message.includes("No valid JSON")) {
-      console.log(
-        `⚠️ Gemini JSON parse failed, retrying (${retries + 1}/${MAX_RETRIES})...`
-      );
-      return generateJSON(systemPrompt, userPrompt, retries + 1);
-    }
+  try {
+    console.log(`🔁 [Gemini] Retry attempt (generateJSON)...`);
+    const text = await callGemini(systemPrompt, userPrompt);
+    const parsed = extractJSON(text);
+    console.log("✅ [Gemini] JSON parsed on retry — provider: Gemini (retry)");
+    return parsed;
+  } catch (retryError) {
+    console.error(
+      `❌ [Gemini] Retry also failed: ${retryError.message}`
+    );
+    console.warn(
+      "🔄 [Fallback] Gemini exhausted, switching to Groq..."
+    );
+  }
 
-    // ── Any other Gemini error → fall back to Groq ──
-    console.error("❌ Gemini Service Error:", error.message);
-    console.warn("🔄 Attempting Groq fallback for non-overload Gemini error...");
-    try {
-      const groqText = await callGroqFallback(systemPrompt, userPrompt);
-      const parsed = extractJSON(groqText);
-      console.log("✅ [Groq] JSON parsed successfully (fallback)");
-      return parsed;
-    } catch (groqError) {
-      console.error("❌ [Groq] Fallback also failed:", groqError.message);
-      throw new Error(
-        `Gemini failed: ${error.message} & Groq fallback failed: ${groqError.message}`
-      );
-    }
+  // ── Step 3: Fall back to Groq ──
+  try {
+    const groqText = await callGroqFallback(systemPrompt, userPrompt);
+    const parsed = extractJSON(groqText);
+    console.log("✅ [Groq] JSON parsed successfully — provider: Groq (fallback)");
+    return parsed;
+  } catch (groqError) {
+    // Both providers failed — throw a clear, structured error
+    console.error("❌ [Groq] Fallback also failed:", groqError.message);
+    throw new Error(
+      `Both AI providers failed. Gemini and Groq are unavailable. Last error: ${groqError.message}`
+    );
   }
 };
 
 /**
- * Generate a plain text response from Gemini.
+ * Generate a plain text response.
+ * Retry + Groq fallback flow (see diagram at top of file).
+ *
  * @param {string} systemPrompt - System instruction
- * @param {string} userPrompt - User content
- * @param {number} retries - Current retry count (internal — for 503 retries)
- * @returns {Promise<string>} Raw text response
+ * @param {string} userPrompt   - User content
+ * @returns {Promise<string>}    Raw text response
  */
-const generateText = async (systemPrompt, userPrompt, retries = 0) => {
+const generateText = async (systemPrompt, userPrompt) => {
+  // ── Step 1: Try Gemini (first attempt) ──
   try {
-    console.log("📤 [Gemini] Sending generateText request...");
+    console.log(`📤 [Gemini] Sending generateText request (${GEMINI_MODEL})...`);
+    const text = await callGemini(systemPrompt, userPrompt);
+    console.log("✅ [Gemini] Text received — provider: Gemini");
+    return text;
+  } catch (firstError) {
+    console.warn(
+      `⚠️ [Gemini] First attempt failed: ${firstError.message}`
+    );
+    console.log(`⏳ [Gemini] Retrying in ${RETRY_DELAY_MS}ms...`);
+  }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: userPrompt }],
-        },
-      ],
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.7,
-        topP: 0.9,
-        maxOutputTokens: 4096,
-      },
-    });
+  // ── Step 2: Retry Gemini once after 1 s delay ──
+  await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
 
-    console.log("📥 [Gemini] Response received from generateText");
-    return response.text || "";
-  } catch (error) {
-    // ── 503 / overload → retry up to MAX_GEMINI_RETRIES then Groq fallback ──
-    if (isOverloadError(error)) {
-      if (retries < MAX_GEMINI_RETRIES) {
-        const delay = Math.min(1000 * 2 ** retries, 8000);
-        console.log(
-          `⚠️ [Gemini] 503/overload detected, retrying in ${delay}ms (${retries + 1}/${MAX_GEMINI_RETRIES})...`
-        );
-        await new Promise((r) => setTimeout(r, delay));
-        return generateText(systemPrompt, userPrompt, retries + 1);
-      }
+  try {
+    console.log(`🔁 [Gemini] Retry attempt (generateText)...`);
+    const text = await callGemini(systemPrompt, userPrompt);
+    console.log("✅ [Gemini] Text received on retry — provider: Gemini (retry)");
+    return text;
+  } catch (retryError) {
+    console.error(
+      `❌ [Gemini] Retry also failed: ${retryError.message}`
+    );
+    console.warn(
+      "🔄 [Fallback] Gemini exhausted, switching to Groq..."
+    );
+  }
 
-      console.warn(
-        `🚨 [Gemini] All ${MAX_GEMINI_RETRIES} retries exhausted. Switching to Groq fallback...`
-      );
-      try {
-        const groqText = await callGroqFallback(systemPrompt, userPrompt);
-        console.log("✅ [Groq] Text response received (fallback)");
-        return groqText;
-      } catch (groqError) {
-        console.error("❌ [Groq] Fallback also failed:", groqError.message);
-        throw new Error(
-          `Gemini overloaded & Groq fallback failed: ${groqError.message}`
-        );
-      }
-    }
-
-    // ── Any other Gemini error → fall back to Groq ──
-    console.error("❌ Gemini Text Error:", error.message);
-    console.warn("🔄 Attempting Groq fallback for non-overload Gemini error...");
-    try {
-      const groqText = await callGroqFallback(systemPrompt, userPrompt);
-      console.log("✅ [Groq] Text response received (fallback)");
-      return groqText;
-    } catch (groqError) {
-      console.error("❌ [Groq] Fallback also failed:", groqError.message);
-      throw new Error(
-        `Gemini failed: ${error.message} & Groq fallback failed: ${groqError.message}`
-      );
-    }
+  // ── Step 3: Fall back to Groq ──
+  try {
+    const groqText = await callGroqFallback(systemPrompt, userPrompt);
+    console.log("✅ [Groq] Text received — provider: Groq (fallback)");
+    return groqText;
+  } catch (groqError) {
+    // Both providers failed — throw a clear, structured error
+    console.error("❌ [Groq] Fallback also failed:", groqError.message);
+    throw new Error(
+      `Both AI providers failed. Gemini and Groq are unavailable. Last error: ${groqError.message}`
+    );
   }
 };
 
