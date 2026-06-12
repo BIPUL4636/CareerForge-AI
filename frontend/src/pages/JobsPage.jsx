@@ -411,7 +411,7 @@ export default function JobsPage() {
                                     <option
                                       key={s}
                                       value={s}
-                                      className="bg-surface-200 text-white"
+                                      className="bg-surface-200 text-gray-900"
                                     >
                                       {s}
                                     </option>
@@ -538,7 +538,7 @@ export default function JobsPage() {
                   <option
                     key={cat}
                     value={cat}
-                    className="bg-surface-200 text-white"
+                    className="bg-surface-200 text-gray-900"
                   >
                     {cat}
                   </option>

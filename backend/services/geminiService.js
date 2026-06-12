@@ -161,8 +161,20 @@ const generateJSON = async (systemPrompt, userPrompt, retries = 0) => {
       return generateJSON(systemPrompt, userPrompt, retries + 1);
     }
 
+    // ── Any other Gemini error → fall back to Groq ──
     console.error("❌ Gemini Service Error:", error.message);
-    throw new Error(`Gemini API Error: ${error.message}`);
+    console.warn("🔄 Attempting Groq fallback for non-overload Gemini error...");
+    try {
+      const groqText = await callGroqFallback(systemPrompt, userPrompt);
+      const parsed = extractJSON(groqText);
+      console.log("✅ [Groq] JSON parsed successfully (fallback)");
+      return parsed;
+    } catch (groqError) {
+      console.error("❌ [Groq] Fallback also failed:", groqError.message);
+      throw new Error(
+        `Gemini failed: ${error.message} & Groq fallback failed: ${groqError.message}`
+      );
+    }
   }
 };
 
@@ -222,8 +234,19 @@ const generateText = async (systemPrompt, userPrompt, retries = 0) => {
       }
     }
 
+    // ── Any other Gemini error → fall back to Groq ──
     console.error("❌ Gemini Text Error:", error.message);
-    throw new Error(`Gemini API Error: ${error.message}`);
+    console.warn("🔄 Attempting Groq fallback for non-overload Gemini error...");
+    try {
+      const groqText = await callGroqFallback(systemPrompt, userPrompt);
+      console.log("✅ [Groq] Text response received (fallback)");
+      return groqText;
+    } catch (groqError) {
+      console.error("❌ [Groq] Fallback also failed:", groqError.message);
+      throw new Error(
+        `Gemini failed: ${error.message} & Groq fallback failed: ${groqError.message}`
+      );
+    }
   }
 };
 
